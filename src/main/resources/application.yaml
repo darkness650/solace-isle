@@ -16,6 +16,23 @@ spring:
     redis:
       host: localhost
       port: 6379
+  mail:
+    host: ${solace.mail.host}
+    port: ${solace.mail.port}
+    username: ${solace.mail.username}
+    password: ${solace.mail.password}
+    from: ${solace.mail.from}
+    default-encoding: UTF-8
+    # 465 端口使用 SSL，不需要 STARTTLS
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: false
+            required: false
   datasource:
     url: jdbc:postgresql://${solace.datasource.host}:${solace.datasource.port}/${solace.datasource.database}
     username: ${solace.datasource.username}
