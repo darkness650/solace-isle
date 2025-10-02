@@ -1,0 +1,74 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      force-response: true # 强制使用 UTF-8 编码
+      charset: UTF-8
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  datasource:
+    url: jdbc:sqlite:./src/main/resources/sqlite/solance_isle.db
+    driver-class-name: org.sqlite.JDBC
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sky.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+#knife4j配置
+# Knife4j配置
+# springdoc-openapi配置
+springdoc:
+  # get请求多参数时不需要添加额外的@ParameterObject和@Parameter注解
+  default-flat-param-object: true
+  # 启用swaggerUI
+  swagger-ui:
+    #自定义swagger前端请求路径，输入http：127.0.0.1:8080/swagger-ui.html会自动重定向到swagger页面
+    path: /swagger-ui.html
+    enabled: true
+    #    tags-sorter: alpha # 标签的排序方式 alpha:按照子母顺序排序（@ApiSupport注解排序不生效，因此需要设置）
+    #    operations-sorter: alpha # 接口的排序方式 alpha:按照子母顺序排序（@ApiOperationSupport注解排序生效，因此这里不作设置）
+    tags-sorter: alpha
+    operations-sorter: alpha # 设置规则为order，该规则会使用Knife4j的增强排序扩展规则`x-order`
+  # 启用文档，默认开启
+  api-docs:
+    path: /v3/api-docs    #swagger后端请求地址
+#knife4j配置
+knife4j:
+  #是否启用增强设置
+  enable: false
+  #开启生产环境屏蔽
+  production: false
+  setting:
+    language: zh_cn
+    enable-version: true
+    enable-swagger-models: true
+solace:
+  jwt:
+    # 设置jwt签名加密时使用的秘钥
+    user-secret-key: ${solace.jwt.user-secret-key}
+    # 设置jwt过期时间
+    user-ttl: ${solace.jwt.user-ttl}
+    # 设置前端传递过来的令牌名称
+    user-token-name: ${solace.jwt.user-token-name}
