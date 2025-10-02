@@ -9,20 +9,38 @@ spring:
     active: dev
   main:
     allow-circular-references: true
-  mvc:
-    pathmatch:
-      matching-strategy: ANT_PATH_MATCHER
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
   data:
     redis:
       host: localhost
       port: 6379
   datasource:
-    url: jdbc:sqlite:./src/main/resources/sqlite/solance_isle.db
-    driver-class-name: org.sqlite.JDBC
+    url: jdbc:postgresql://${solace.datasource.host}:${solace.datasource.port}/${solace.datasource.database}
+    username: ${solace.datasource.username}
+    password: ${solace.datasource.password}
+    driver-class-name: ${solace.datasource.driver-class-name}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate.format_sql: true
+      # 避免在容器尚未完全可用时访问元数据（可选）
+      hibernate.boot.allow_jdbc_metadata_access: true
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.sky.entity
+  type-aliases-package: com.solaceisle.pojo.entity
   configuration:
     #开启驼峰命名
     map-underscore-to-camel-case: true
@@ -31,34 +49,23 @@ mybatis:
 logging:
   level:
     com:
-      sky:
+      solaceisle:
         mapper: debug
         service: info
         controller: info
 
 #knife4j配置
-# Knife4j配置
-# springdoc-openapi配置
 springdoc:
-  # get请求多参数时不需要添加额外的@ParameterObject和@Parameter注解
   default-flat-param-object: true
-  # 启用swaggerUI
   swagger-ui:
-    #自定义swagger前端请求路径，输入http：127.0.0.1:8080/swagger-ui.html会自动重定向到swagger页面
     path: /swagger-ui.html
     enabled: true
-    #    tags-sorter: alpha # 标签的排序方式 alpha:按照子母顺序排序（@ApiSupport注解排序不生效，因此需要设置）
-    #    operations-sorter: alpha # 接口的排序方式 alpha:按照子母顺序排序（@ApiOperationSupport注解排序生效，因此这里不作设置）
     tags-sorter: alpha
-    operations-sorter: alpha # 设置规则为order，该规则会使用Knife4j的增强排序扩展规则`x-order`
-  # 启用文档，默认开启
+    operations-sorter: alpha
   api-docs:
-    path: /v3/api-docs    #swagger后端请求地址
-#knife4j配置
+    path: /v3/api-docs
 knife4j:
-  #是否启用增强设置
   enable: false
-  #开启生产环境屏蔽
   production: false
   setting:
     language: zh_cn

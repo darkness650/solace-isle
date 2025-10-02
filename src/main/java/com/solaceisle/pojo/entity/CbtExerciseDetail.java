@@ -3,8 +3,6 @@ package com.solaceisle.pojo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Entity
 @Data
 @Table(name = "cbt_exercise_detail")

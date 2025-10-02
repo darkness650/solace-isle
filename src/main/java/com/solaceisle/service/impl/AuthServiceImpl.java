@@ -8,6 +8,7 @@ import com.solaceisle.properties.JwtProperties;
 import com.solaceisle.service.AuthService;
 import com.solaceisle.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final JwtProperties jwtProperties;
+    private final RedisTemplate<String,String> redisTemplate;
     @Override
     public String login(LoginDTO loginDTO) {
         String account=loginDTO.getAccount();
@@ -25,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
         if(account==null || password==null) {
             throw new IllegalLoginMessageException(AuthConstant.ILLGAL_ACCOUNT);
         }
-        Long id=null;
+        String id=null;
         if(account.contains("@"))
         {
             id= authMapper.loginByEmail(account,password);
@@ -42,9 +44,9 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid credentials");
         }
         UUID sessionId= UUID.randomUUID();
-        Map<String,Object> claims= Map.of("id",id,"sessionId",sessionId);
-        //TODO sessionid存入redis
+        Map<String,Object> claims= Map.of("id",id,"sessionId",sessionId.toString());
         String jwt= JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
+        redisTemplate.opsForValue().set(id,sessionId.toString());
         return jwt;
     }
 }
