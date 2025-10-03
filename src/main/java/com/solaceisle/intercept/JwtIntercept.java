@@ -20,35 +20,37 @@ import java.util.Map;
 public class JwtIntercept implements HandlerInterceptor {
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtProperties jwtProperties;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String header=request.getHeader(jwtProperties.getUserTokenName());
-        log.info("拦截到请求: {}",request.getRequestURI());
+        String header = request.getHeader(jwtProperties.getUserTokenName());
+        log.info("拦截到请求: {}", request.getRequestURI());
         if (!(handler instanceof HandlerMethod)) {
             //当前拦截到的不是动态方法，直接放行
             log.info("当前拦截到的不是动态方法，直接放行");
             return true;
         }
-        if(header==null||!header.startsWith("Bearer ")){
+        if (header == null || !header.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             log.info("未授权");
             return false;
         }
-        String jwt=header.split(" ")[1];
-        try{
-            Map<String,Object> claims=JwtUtil.parseJWT(jwtProperties.getUserSecretKey(),jwt);
-            String id= claims.get("id").toString();
-            String sessionId= claims.get("sessionId").toString();
-            if(!sessionId.equals(redisTemplate.opsForValue().get(id))){
+        String jwt = header.split(" ")[1];
+        try {
+            Map<String, Object> claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), jwt);
+            String id = claims.get("id").toString();
+            String sessionId = claims.get("sessionId").toString();
+            String redisValue = redisTemplate.opsForValue().get(id);
+            log.info("redisValue:{}", redisValue);
+            if (!sessionId.equals(redisValue)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                log.info("未授权");
+                log.info("未授权,seesionid为：{}", sessionId);
                 return false;
             }
             BaseContext.setCurrentId(id);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             return false;
         }
         log.info("放行");

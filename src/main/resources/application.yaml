@@ -26,13 +26,22 @@ spring:
     # 465 端口使用 SSL，不需要 STARTTLS
     properties:
       mail:
+        debug: true           # 打印 JavaMail 调试日志
         smtp:
           auth: true
-          ssl:
-            enable: true
           starttls:
-            enable: false
-            required: false
+            enable: true
+            required: true
+          connectiontimeout: 10000   # 连接超时 (ms)
+          timeout: 10000             # 读超时
+          writetimeout: 10000        # 写超时
+          ssl:
+            enable: false            # 587 使用 STARTTLS，不用 SSL
+          # 如果 DNS / 证书有问题可放开以下 trust
+          # ssl.trust: smtp.qq.com
+
+
+
   datasource:
     url: jdbc:postgresql://${solace.datasource.host}:${solace.datasource.port}/${solace.datasource.database}
     username: ${solace.datasource.username}
