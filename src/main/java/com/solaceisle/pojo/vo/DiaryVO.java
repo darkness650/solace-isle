@@ -14,7 +14,7 @@ public class DiaryVO {
     private String emotion;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    private LocalDate createTime;
 
     private String text;
 

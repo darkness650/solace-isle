@@ -22,3 +22,4 @@ public interface UserMapper {
 
     void updateEmail(String studentId, String email);
 }
+

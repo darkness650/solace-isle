@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.solaceisle.mapper.DiaryMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.solaceisle.pojo.entity.Diary">
+        insert into diary(student_id, emoji, emotion, text, image, tags, create_time) VALUES
+        (#{studentId}, #{emoji}, #{emotion}, #{text}, #{image}, #{tags}, #{createTime})
+    </insert>
 
     <select id="findByStudentIdAndYearMonth" resultType="com.solaceisle.pojo.entity.Diary">
         SELECT id, student_id, emoji, emotion, text, image, tags, create_time
         FROM diary
         WHERE student_id = #{studentId}
-        AND create_time LIKE #{yearMonth} || '%'
+        AND create_time between #{start} and #{end}
         ORDER BY create_time ASC
     </select>
 

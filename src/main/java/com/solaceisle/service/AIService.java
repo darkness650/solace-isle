@@ -1,6 +1,7 @@
 package com.solaceisle.service;
 
 import com.solaceisle.pojo.vo.DiaryVO;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 
@@ -20,4 +21,5 @@ public interface AIService {
     @Tool(description = "获取某月的日记列表")
     List<DiaryVO> getMonthDiary(
             @ToolParam(description = "某年某月，格式为yyyy-MM") String yearMonth);
+
 }

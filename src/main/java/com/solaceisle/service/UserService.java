@@ -20,3 +20,4 @@ public interface UserService {
 
     void updateEmail(UpdateEmailDTO updateEmailDTO);
 }
+

@@ -2,8 +2,10 @@ package com.solaceisle.pojo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "diary")
@@ -32,9 +34,9 @@ public class Diary {
 
     @Column(name = "tags")
     private String tags;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "create_time")
-    private String createTime;
+    private LocalDate createTime;
 
 
 }
