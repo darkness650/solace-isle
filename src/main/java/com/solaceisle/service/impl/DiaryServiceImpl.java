@@ -1,5 +1,6 @@
 package com.solaceisle.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.solaceisle.constant.MessageConstant;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.exception.IllegalDateFormatException;
@@ -7,14 +8,18 @@ import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.pojo.dto.DiaryDTO;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.vo.DiaryVO;
-import com.solaceisle.service.AIService;
 import com.solaceisle.service.DiaryService;
 import com.solaceisle.util.AIUtil;
+import io.github.imfangs.dify.client.DifyChatClient;
+import io.github.imfangs.dify.client.enums.ResponseMode;
+import io.github.imfangs.dify.client.exception.DifyApiException;
+import io.github.imfangs.dify.client.model.chat.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +33,18 @@ public class DiaryServiceImpl implements DiaryService {
 
     private final DiaryMapper diaryMapper;
     private final AIUtil aiUtil;
+    private final DifyChatClient difyChatClient;
+
     @Override
     public List<DiaryVO> getMonthDiary(String yearMonth) {
         if (yearMonth == null || !yearMonth.matches(YEAR_MONTH_REGEX)) {
             throw new IllegalDateFormatException(MessageConstant.DATE_FORMAT_ERROR);
         }
-        LocalDate start = LocalDate.parse(yearMonth+"-01");
+        LocalDate start = LocalDate.parse(yearMonth + "-01");
         LocalDate end = start.plusMonths(1);
         String studentId = BaseContext.getCurrentId();
 
-        List<Diary> diaries = diaryMapper.findByStudentIdAndYearMonth(studentId, start,end);
+        List<Diary> diaries = diaryMapper.findByStudentIdAndYearMonth(studentId, start, end);
 
         List<DiaryVO> diaryVOs = new ArrayList<>(diaries.size());
         for (Diary diary : diaries) {
@@ -61,8 +68,14 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public List<String> getTags(String text) {
-        return aiUtil.getTags(text);
+    public List<String> getTags(String text) throws DifyApiException, IOException {
+        ChatMessage message = ChatMessage.builder()
+                .query(text)
+                .responseMode(ResponseMode.BLOCKING)
+                .user(BaseContext.getCurrentId())
+                .build();
+        String answer = difyChatClient.sendChatMessage(message).getAnswer();
+        return JSON.parseArray(answer, String.class);
     }
 }
 

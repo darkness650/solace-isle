@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class McpToolConfiguration {
+public class McpServerConfiguration {
 
     @Bean
     public ToolCallbackProvider mcpTools(AIService aiService) {

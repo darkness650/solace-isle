@@ -2,10 +2,9 @@ package com.solaceisle.service;
 
 import com.solaceisle.pojo.dto.DiaryDTO;
 import com.solaceisle.pojo.vo.DiaryVO;
-import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
+import io.github.imfangs.dify.client.exception.DifyApiException;
 
-import java.time.LocalDate;
+import java.io.IOException;
 import java.util.List;
 
 public interface DiaryService {
@@ -14,6 +13,6 @@ public interface DiaryService {
 
     void addDiary(DiaryDTO diaryDTO);
 
-    List<String> getTags(String text);
+    List<String> getTags(String text) throws DifyApiException, IOException;
 }
 

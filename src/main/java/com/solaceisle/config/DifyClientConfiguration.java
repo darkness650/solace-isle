@@ -1,0 +1,17 @@
+package com.solaceisle.config;
+
+import com.solaceisle.properties.DifyProperties;
+import io.github.imfangs.dify.client.DifyChatClient;
+import io.github.imfangs.dify.client.DifyClientFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class DifyClientConfiguration {
+
+    @Bean
+    public DifyChatClient tagGeneratorClient(DifyProperties difyProperties) {
+        return DifyClientFactory.createChatClient(
+                difyProperties.getUrl(), difyProperties.getApiKey().getTagGenerator());
+    }
+}

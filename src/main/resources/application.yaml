@@ -119,3 +119,8 @@ solace:
     endpoint: ${solace.alioss.endpoint}
     # 心理健康中心热线电话
   hotline: ${solace.hotline}
+  dify:
+    url: ${solace.dify.url}
+    token:
+      tag-generator: ${solace.dify.api-key.tag-generator}
+
