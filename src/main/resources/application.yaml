@@ -67,7 +67,7 @@ spring:
   ai:
     mcp:
       server:
-        name: solance-isle-mcp-server
+        name: solace-isle-mcp-server
 
 mybatis:
   #mapper配置文件
