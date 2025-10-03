@@ -38,5 +38,5 @@ public class Diary {
     @Column(name = "create_time")
     private LocalDate createTime;
 
-
+    private int consecutivedays;
 }

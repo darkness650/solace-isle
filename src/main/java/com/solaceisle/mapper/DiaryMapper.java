@@ -14,5 +14,7 @@ public interface DiaryMapper {
     List<Diary> findByStudentIdAndYearMonth(String studentId, LocalDate start,LocalDate end);
 
     void insert(Diary diary);
+
+    Diary findByStudentIdAndCreateTime(String currentId, LocalDate localDate);
 }
 

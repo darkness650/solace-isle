@@ -56,11 +56,19 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     public void addDiary(DiaryDTO diaryDTO) {
+        Diary yesterdaysDiary = diaryMapper.findByStudentIdAndCreateTime(BaseContext.getCurrentId(), LocalDate.now().minusDays(1));
         Diary diary = new Diary();
+        if(yesterdaysDiary==null)
+        {
+            diary.setConsecutivedays(1);
+        }
+        else
+        {
+            diary.setConsecutivedays(yesterdaysDiary.getConsecutivedays()+1);
+        }
         BeanUtils.copyProperties(diaryDTO, diary);
         diary.setCreateTime(LocalDate.now());
         diary.setStudentId(BaseContext.getCurrentId());
-
         diary.setTags(diaryDTO.getTags().toString());
         diaryMapper.insert(diary);
     }
