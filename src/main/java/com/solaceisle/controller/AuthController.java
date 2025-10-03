@@ -5,7 +5,6 @@ import com.solaceisle.pojo.dto.LoginDTO;
 import com.solaceisle.pojo.dto.RegisteDTO;
 import com.solaceisle.result.Result;
 import com.solaceisle.service.AuthService;
-import com.solaceisle.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

@@ -10,7 +10,7 @@ import com.solaceisle.pojo.dto.LoginDTO;
 import com.solaceisle.pojo.dto.RegisteDTO;
 import com.solaceisle.properties.JwtProperties;
 import com.solaceisle.service.AuthService;
-import com.solaceisle.service.EmailService;
+import com.solaceisle.util.EmailUtil;
 import com.solaceisle.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final JwtProperties jwtProperties;
     private final RedisTemplate<String,String> redisTemplate;
-    private final EmailService emailService;
+    private final EmailUtil emailUtil;
     @Override
     public String login(LoginDTO loginDTO) {
         String account=loginDTO.getAccount();
@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
     public void sendCode(String email) {
         String code= UUID.randomUUID().toString().substring(0,6);
         try {
-            emailService.sendTextEmail(email, "心屿-SolaceIsle验证码", "您的验证码是：" + code + "，请勿泄露给他人,验证码在" + (jwtProperties.getUserTtl() / 60000) + "分钟内有效");
+            emailUtil.sendTextEmail(email, "心屿-SolaceIsle验证码", "您的验证码是：" + code + "，请勿泄露给他人,验证码在" + (jwtProperties.getUserTtl() / 60000) + "分钟内有效");
         }catch (Exception e){
             e.printStackTrace();
             throw new IllegalEmailException(AuthConstant.ILLGAL_EMAIL);

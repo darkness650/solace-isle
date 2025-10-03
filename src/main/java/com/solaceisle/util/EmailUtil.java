@@ -1,24 +1,24 @@
-package com.solaceisle.service.impl;
+package com.solaceisle.util;
 
-import com.solaceisle.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
-public class EmailServiceImpl implements EmailService {
+public class EmailUtil {
+
     private final JavaMailSender mailSender;
+
     @Value("${spring.mail.from}")
     private String fromAddress;
 
-    @Override
     public void sendTextEmail(String to, String subject, String text) {
         // 基本参数校验，避免空值引发的无意义连接尝试
         if (!StringUtils.hasText(to)) {

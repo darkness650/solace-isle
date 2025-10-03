@@ -10,7 +10,7 @@ solace:
     driver-class-name: org.postgresql.Driver
     host: localhost
     port: 5432
-    database: solace_isle
+    database: solance_isle
     username: postgres
     password: zl20050805666
   mail:
