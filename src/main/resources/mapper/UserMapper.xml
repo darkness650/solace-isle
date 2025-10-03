@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.solaceisle.mapper.UserMapper">
+    <update id="setHabits">
+        update setting
+        <set>
+            <if test="shareStatistics!=null">share_statistics=#{shareStatistics},</if>
+            <if test="recordRemind!=null">record_remind=#{recordRemind},</if>
+            <if test="exerciseNotice!=null">exercise_notice=#{exerciseNotice},</if>
+        </set>
+        where student_id=#{studentId}
+    </update>
+    <update id="changeProfile">
+        update "user"
+        <set>
+            <if test="avatar!=null">avatar=#{avatar},</if>
+            <if test="nickname!=null">nickname=#{nickname},</if>
+            <if test="motto!=null">motto=#{motto},</if>
+        </set>
+        where student_id=#{studentId}
+    </update>
+    <update id="updatePassword">
+        update "user"
+        <set>
+            <if test="newPassword!=null">password=#{newPassword}</if>
+        </set>
+        where student_id=#{studentId}
+    </update>
+    <update id="updateEmail">
+        update "user"
+        <set>
+            <if test="email!=null">email=#{email}</if>
+        </set>
+        where student_id=#{studentId}
+    </update>
+
+    <select id="getHabits" resultType="com.solaceisle.pojo.entity.Setting">
+        select * from setting where student_id = #{studentId}
+    </select>
+    <select id="getUserProfile" resultType="com.solaceisle.pojo.entity.User">
+        select * from "user" where student_id= #{studentId}
+    </select>
+</mapper>

@@ -2,6 +2,7 @@ package com.solaceisle.mapper;
 
 import com.solaceisle.pojo.dto.FindPasswordDTO;
 import com.solaceisle.pojo.dto.RegisteDTO;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -17,4 +18,6 @@ public interface AuthMapper {
     void register(RegisteDTO registeDTO);
 
     void findPassword(FindPasswordDTO findPasswordDTO);
+    @Insert("insert into setting(student_id) values (#{studentId})")
+    void setSetting(String studentId);
 }
