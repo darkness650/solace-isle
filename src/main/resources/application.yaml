@@ -121,6 +121,7 @@ solace:
   hotline: ${solace.hotline}
   dify:
     url: ${solace.dify.url}
-    token:
+    api-key:
       tag-generator: ${solace.dify.api-key.tag-generator}
+      chat-partner: ${solace.dify.api-key.chat-partner}
 

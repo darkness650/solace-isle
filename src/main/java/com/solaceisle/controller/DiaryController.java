@@ -4,9 +4,11 @@ import com.solaceisle.pojo.dto.DiaryDTO;
 import com.solaceisle.pojo.vo.DiaryVO;
 import com.solaceisle.result.Result;
 import com.solaceisle.service.DiaryService;
+import io.github.imfangs.dify.client.exception.DifyApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,13 +24,15 @@ public class DiaryController {
         List<DiaryVO> diaries = diaryService.getMonthDiary(date);
         return Result.success(diaries);
     }
+
     @PostMapping
-    public Result addDiary(@RequestBody DiaryDTO diaryDTO) {
+    public Result<?> addDiary(@RequestBody DiaryDTO diaryDTO) {
         diaryService.addDiary(diaryDTO);
         return Result.success();
     }
+
     @PostMapping("/tags")
-    public Result<List<String>> getTags(String text) {
+    public Result<List<String>> getTags(String text) throws DifyApiException, IOException {
         List<String> tags = diaryService.getTags(text);
         return Result.success(tags);
     }

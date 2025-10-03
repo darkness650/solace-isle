@@ -10,4 +10,6 @@ import org.springframework.stereotype.Component;
 public class DifyApiKeyProperties {
 
     private String tagGenerator;
+
+    private String chatPartner;
 }

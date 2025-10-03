@@ -9,7 +9,6 @@ import com.solaceisle.pojo.dto.DiaryDTO;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.vo.DiaryVO;
 import com.solaceisle.service.DiaryService;
-import com.solaceisle.util.AIUtil;
 import io.github.imfangs.dify.client.DifyChatClient;
 import io.github.imfangs.dify.client.enums.ResponseMode;
 import io.github.imfangs.dify.client.exception.DifyApiException;
@@ -32,8 +31,7 @@ public class DiaryServiceImpl implements DiaryService {
     private static final String YEAR_MONTH_REGEX = "^\\d{4}-(0[1-9]|1[0-2])$";
 
     private final DiaryMapper diaryMapper;
-    private final AIUtil aiUtil;
-    private final DifyChatClient difyChatClient;
+    private final DifyChatClient tagGeneratorClient;
 
     @Override
     public List<DiaryVO> getMonthDiary(String yearMonth) {
@@ -74,7 +72,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .responseMode(ResponseMode.BLOCKING)
                 .user(BaseContext.getCurrentId())
                 .build();
-        String answer = difyChatClient.sendChatMessage(message).getAnswer();
+        String answer = tagGeneratorClient.sendChatMessage(message).getAnswer();
         return JSON.parseArray(answer, String.class);
     }
 }
