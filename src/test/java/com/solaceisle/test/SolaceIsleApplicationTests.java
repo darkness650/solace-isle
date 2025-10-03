@@ -1,4 +1,4 @@
-package com.solaceisle.solaceisle;
+package com.solaceisle.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

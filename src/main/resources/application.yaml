@@ -4,6 +4,7 @@ server:
     encoding:
       force-response: true # 强制使用 UTF-8 编码
       charset: UTF-8
+
 spring:
   profiles:
     active: dev
@@ -54,6 +55,11 @@ spring:
       hibernate.format_sql: true
       # 避免在容器尚未完全可用时访问元数据（可选）
       hibernate.boot.allow_jdbc_metadata_access: true
+  ai:
+    mcp:
+      server:
+        name: solance-isle-mcp-server
+
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
@@ -88,6 +94,7 @@ knife4j:
     language: zh_cn
     enable-version: true
     enable-swagger-models: true
+
 solace:
   jwt:
     # 设置jwt签名加密时使用的秘钥
@@ -96,3 +103,5 @@ solace:
     user-ttl: ${solace.jwt.user-ttl}
     # 设置前端传递过来的令牌名称
     user-token-name: ${solace.jwt.user-token-name}
+    # 心理健康中心热线电话
+  hotline: ${solace.hotline}

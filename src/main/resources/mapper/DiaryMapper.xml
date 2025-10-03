@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.solaceisle.mapper.DiaryMapper">
+
+    <select id="findByStudentIdAndYearMonth" resultType="com.solaceisle.pojo.entity.Diary">
+        SELECT id, student_id, emoji, emotion, text, image, tags, create_time
+        FROM diary
+        WHERE student_id = #{studentId}
+        AND create_time LIKE #{yearMonth} || '%'
+        ORDER BY create_time ASC
+    </select>
+
+</mapper>
+
