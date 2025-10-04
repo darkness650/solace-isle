@@ -1,6 +1,8 @@
 package com.solaceisle.service.impl;
 
 import com.solaceisle.context.BaseContext;
+import com.solaceisle.mapper.UserMapper;
+import com.solaceisle.pojo.entity.User;
 import com.solaceisle.pojo.vo.chat.*;
 import com.solaceisle.service.ChatService;
 import io.github.imfangs.dify.client.DifyChatflowClient;
@@ -11,22 +13,32 @@ import io.github.imfangs.dify.client.model.chat.ChatMessage;
 import io.github.imfangs.dify.client.model.chat.Conversation;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
     private final DifyChatflowClient chatPartnerClient;
+    private final UserMapper userMapper;
 
     @Override
     public SseEmitter chat(String id, String query) throws DifyApiException, IOException {
+        // 获取用户的邮箱地址
+        String studentId = BaseContext.getCurrentId();
+        User user = userMapper.getUserProfile(studentId);
+        String email = user.getEmail();
+
+        // 构造需要发送的消息
         ChatMessage chatMessage = ChatMessage.builder()
-                .query(query).user(id).build();
+                .query(query).user(id).inputs(Map.of("email", email)).build();
 
         SseEmitter emitter = new SseEmitter();
 
@@ -81,6 +93,7 @@ public class ChatServiceImpl implements ChatService {
                 var messageEndVO = new MessageEndVO();
                 BeanUtils.copyProperties(event, messageEndVO);
                 emitter.send(messageEndVO);
+                log.info("发送消息正常完成");
                 emitter.complete();
             }
 
@@ -90,6 +103,7 @@ public class ChatServiceImpl implements ChatService {
                 var errorVO = new ErrorVO();
                 BeanUtils.copyProperties(event, errorVO);
                 emitter.send(errorVO);
+                log.info("发送消息异常完成");
                 emitter.complete();
             }
 

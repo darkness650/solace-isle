@@ -10,9 +10,14 @@ import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.vo.DiaryVO;
 import com.solaceisle.service.DiaryService;
 import io.github.imfangs.dify.client.DifyChatClient;
+import io.github.imfangs.dify.client.DifyCompletionClient;
+import io.github.imfangs.dify.client.enums.FileTransferMethod;
+import io.github.imfangs.dify.client.enums.FileType;
 import io.github.imfangs.dify.client.enums.ResponseMode;
 import io.github.imfangs.dify.client.exception.DifyApiException;
 import io.github.imfangs.dify.client.model.chat.ChatMessage;
+import io.github.imfangs.dify.client.model.completion.CompletionRequest;
+import io.github.imfangs.dify.client.model.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +26,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -32,6 +39,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     private final DiaryMapper diaryMapper;
     private final DifyChatClient tagGeneratorClient;
+    private final DifyCompletionClient diaryEmotionRankClient;
 
     @Override
     public List<DiaryVO> getMonthDiary(String yearMonth) {
@@ -55,21 +63,47 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public void addDiary(DiaryDTO diaryDTO) {
+    public void addDiary(DiaryDTO diaryDTO) throws DifyApiException, IOException {
         Diary yesterdaysDiary = diaryMapper.findByStudentIdAndCreateTime(BaseContext.getCurrentId(), LocalDate.now().minusDays(1));
         Diary diary = new Diary();
-        if(yesterdaysDiary==null)
-        {
-            diary.setConsecutivedays(1);
+        if (yesterdaysDiary == null) {
+            diary.setConsecutiveDays(1);
+        } else {
+            diary.setConsecutiveDays(yesterdaysDiary.getConsecutiveDays() + 1);
         }
-        else
-        {
-            diary.setConsecutivedays(yesterdaysDiary.getConsecutivedays()+1);
-        }
-        BeanUtils.copyProperties(diaryDTO, diary);
+        diary.setEmoji(diaryDTO.getMoodEmoji());
+        diary.setEmotion(diaryDTO.getMoodLabel());
+        diary.setText(diaryDTO.getContent());
+        diary.setImage(diaryDTO.getImage());
         diary.setCreateTime(LocalDate.now());
         diary.setStudentId(BaseContext.getCurrentId());
         diary.setTags(diaryDTO.getTags().toString());
+
+        // 调用AI进行打分
+        Map<String, Object> inputs = new HashMap<>();
+        inputs.put("emoji", diary.getEmoji());
+        inputs.put("emotion", diary.getEmotion());
+        inputs.put("text", diary.getText());
+        inputs.put("tags", diary.getTags());
+
+        var fileInfo = FileInfo.builder()
+                .type(FileType.IMAGE)
+                .transferMethod(FileTransferMethod.REMOTE_URL)
+                .url(diary.getImage())
+                .build();
+
+        var request = CompletionRequest.builder()
+                .user(BaseContext.getCurrentId())
+                .inputs(inputs)
+                .responseMode(ResponseMode.BLOCKING)
+                .files(List.of(fileInfo))
+                .build();
+
+        var response = diaryEmotionRankClient.sendCompletionMessage(request);
+        String answer = response.getAnswer();
+        diary.setScore(Integer.parseInt(answer));
+
+
         diaryMapper.insert(diary);
     }
 

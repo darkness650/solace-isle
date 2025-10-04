@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,7 +25,7 @@ public class DiaryController {
     }
 
     @PostMapping
-    public Result<?> addDiary(@RequestBody DiaryDTO diaryDTO) {
+    public Result<?> addDiary(@RequestBody DiaryDTO diaryDTO) throws DifyApiException, IOException {
         diaryService.addDiary(diaryDTO);
         return Result.success();
     }

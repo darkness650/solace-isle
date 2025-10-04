@@ -35,7 +35,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public MoodVO getMood() {
         String studentId = currentUserIdOrThrow();
-        Diary diary= dashboardMapper.getCurrentMood(studentId);
+        Diary diary = dashboardMapper.getCurrentMood(studentId);
         MoodVO moodVO = new MoodVO();
         moodVO.setEmoji(diary.getEmoji());
         moodVO.setDescription(diary.getText());
@@ -48,25 +48,22 @@ public class DashboardServiceImpl implements DashboardService {
 
         List<Diary> diaries = dashboardMapper.getRecentTrack(currentUserIdOrThrow(), days);
         TrackVO trackVO = new TrackVO();
-        trackVO.setConsecutiveDays(diaries.get(0).getConsecutivedays());
-        List<Track> tracks=new ArrayList<>();
-        LocalDate lastDiary=LocalDate.now();
+        trackVO.setConsecutiveDays(diaries.get(0).getConsecutiveDays());
+        List<Track> tracks = new ArrayList<>();
+        LocalDate lastDiary = LocalDate.now();
         for (Diary diary : diaries) {
-            if(tracks.size()>=days) break;
+            if (tracks.size() >= days) break;
             Track track = new Track();
             int daysBetween = (int) (lastDiary.toEpochDay() - diary.getCreateTime().toEpochDay());
-            for (int i = 0; i < daysBetween - 1; i++)
-            {
+            for (int i = 0; i < daysBetween - 1; i++) {
                 tracks.add(new Track());
             }
             track.setDay(String.valueOf(diary.getCreateTime().getDayOfWeek()));
             track.setLabel(diary.getEmoji());
-            //TODO 用ai生成评分
-            track.setScore("0");
+            track.setScore(diary.getScore());
             tracks.add(track);
         }
-        if(tracks.size()<days)
-        {
+        if (tracks.size() < days) {
             int remainingDays = days - tracks.size();
             for (int i = 0; i < remainingDays; i++) {
                 tracks.add(new Track());

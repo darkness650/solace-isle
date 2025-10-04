@@ -34,9 +34,17 @@ public class Diary {
 
     @Column(name = "tags")
     private String tags;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "create_time")
     private LocalDate createTime;
 
-    private int consecutivedays;
+    @Column(name ="consecutive_days")
+    private int consecutiveDays;
+
+    /**
+     * 分数，0~5分
+     */
+    @Column(name = "score")
+    private int score;
 }

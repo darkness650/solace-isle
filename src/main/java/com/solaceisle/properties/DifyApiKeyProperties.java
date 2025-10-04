@@ -12,4 +12,6 @@ public class DifyApiKeyProperties {
     private String tagGenerator;
 
     private String chatPartner;
+
+    private String diaryEmotionRank;
 }

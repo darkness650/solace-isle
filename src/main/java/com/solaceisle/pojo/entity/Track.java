@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class Track {
     private String day= DiaryConstant.UnRecord;
-    private String score= DiaryConstant.UnRecord;
+    private Integer score= DiaryConstant.DEFAULT_SCORE;
     private String label= DiaryConstant.UnRecord;
 }

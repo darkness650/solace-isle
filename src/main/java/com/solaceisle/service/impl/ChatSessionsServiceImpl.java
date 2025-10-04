@@ -2,9 +2,12 @@ package com.solaceisle.service.impl;
 
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.pojo.vo.ChatSessionMessagesVO;
+import com.solaceisle.pojo.vo.ChatSessionsVO;
 import com.solaceisle.service.ChatSessionsService;
 import io.github.imfangs.dify.client.DifyChatflowClient;
 import io.github.imfangs.dify.client.exception.DifyApiException;
+import io.github.imfangs.dify.client.model.chat.Conversation;
+import io.github.imfangs.dify.client.model.chat.ConversationListResponse;
 import io.github.imfangs.dify.client.model.chat.MessageListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -49,5 +52,26 @@ public class ChatSessionsServiceImpl implements ChatSessionsService {
             chatSessionMessagesVO.getMessages().add(messageVO);
         }
         return chatSessionMessagesVO;
+    }
+
+    @Override
+    public ChatSessionsVO getSessions(String lastId, Integer limit) throws DifyApiException, IOException {
+        var conversationListResponse = chatPartnerClient.getConversations(BaseContext.getCurrentId(), lastId, limit, null);
+        var chatSessionsVO = new ChatSessionsVO();
+        BeanUtils.copyProperties(conversationListResponse, chatSessionsVO);
+
+        // 将List手动进行转换
+        List<Conversation> data = conversationListResponse.getData();
+        for (Conversation conversation : data) {
+            var sessionVO = new ChatSessionsVO.SessionVO();
+            sessionVO.setId(conversation.getId());
+            sessionVO.setTitle(conversation.getName());
+            // 时间戳转为LocalDateTime
+            long timestamp = conversation.getUpdatedAt();
+            sessionVO.setDatetime(LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.ofHours(8)));
+            chatSessionsVO.getSessions().add(sessionVO);
+        }
+
+        return chatSessionsVO;
     }
 }

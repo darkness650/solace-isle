@@ -11,7 +11,7 @@ public interface DiaryService {
 
     List<DiaryVO> getMonthDiary(String yearMonth);
 
-    void addDiary(DiaryDTO diaryDTO);
+    void addDiary(DiaryDTO diaryDTO) throws DifyApiException, IOException;
 
     List<String> getTags(String text) throws DifyApiException, IOException;
 }
