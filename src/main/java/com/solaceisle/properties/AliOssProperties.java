@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "solace.oss")
+@ConfigurationProperties(prefix = "solace.alioss")
 @Data
 public class AliOssProperties {
 

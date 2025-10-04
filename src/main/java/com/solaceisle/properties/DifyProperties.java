@@ -12,4 +12,20 @@ public class DifyProperties {
     private String url;
 
     private DifyApiKeyProperties apiKey;
+
+    @Component
+    @ConfigurationProperties(prefix = "solace.dify.api-key")
+    @Data
+    public static class DifyApiKeyProperties {
+
+        private String tagGenerator;
+
+        private String chatPartner;
+
+        private String diaryEmotionRank;
+
+        private String suggestionGenerator;
+
+        private String cbtAnalyzer;
+    }
 }
