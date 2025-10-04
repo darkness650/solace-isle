@@ -1,17 +1,11 @@
 package com.solaceisle.controller;
 
-import com.solaceisle.pojo.dto.UpdateMoodDTO;
-import com.solaceisle.pojo.entity.UserAchievement;
-import com.solaceisle.pojo.entity.UserCbtExercise;
-import com.solaceisle.pojo.po.DashboardSummaryVO;
 import com.solaceisle.pojo.po.MoodVO;
 import com.solaceisle.pojo.po.TrackVO;
 import com.solaceisle.result.Result;
 import com.solaceisle.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
