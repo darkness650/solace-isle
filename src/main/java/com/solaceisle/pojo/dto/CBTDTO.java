@@ -1,10 +1,23 @@
 package com.solaceisle.pojo.dto;
 
-import java.util.List;
-import java.util.Map;
+import lombok.Data;
 
+import java.util.List;
+
+@Data
 public class CBTDTO {
+
     private List<String> options;
+
     private String text;
-    private Map<String,String> evidence;
+
+    private Evidence evidence;
+
+    @Data
+    public static class Evidence {
+
+        private String support;
+
+        private String against;
+    }
 }

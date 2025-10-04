@@ -123,4 +123,6 @@ solace:
       tag-generator: ${solace.dify.api-key.tag-generator}
       chat-partner: ${solace.dify.api-key.chat-partner}
       diary-emotion-rank: ${solace.dify.api-key.diary-emotion-rank}
+      suggestion-generator: ${solace.dify.api-key.suggestion-generator}
+      cbt-analyzer: ${solace.dify.api-key.cbt-analyzer}
 

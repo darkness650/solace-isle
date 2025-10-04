@@ -1,20 +1,33 @@
 package com.solaceisle.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSON;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.CBTMapper;
 import com.solaceisle.pojo.dto.CBTDTO;
 import com.solaceisle.pojo.entity.CbtExerciseDetail;
-import com.solaceisle.pojo.po.CBTDeatilVO;
-import com.solaceisle.pojo.po.CBTVO;
+import com.solaceisle.pojo.vo.CBTDetailVO;
+import com.solaceisle.pojo.vo.CBTVO;
+import com.solaceisle.pojo.vo.chat.ErrorVO;
+import com.solaceisle.pojo.vo.chat.MessageEndVO;
+import com.solaceisle.pojo.vo.chat.MessageVO;
+import com.solaceisle.pojo.vo.chat.PingVO;
 import com.solaceisle.service.CBTService;
+import io.github.imfangs.dify.client.DifyChatClient;
+import io.github.imfangs.dify.client.callback.ChatStreamCallback;
+import io.github.imfangs.dify.client.enums.ResponseMode;
+import io.github.imfangs.dify.client.event.ErrorEvent;
+import io.github.imfangs.dify.client.event.MessageEndEvent;
+import io.github.imfangs.dify.client.event.MessageEvent;
+import io.github.imfangs.dify.client.event.PingEvent;
+import io.github.imfangs.dify.client.exception.DifyApiException;
+import io.github.imfangs.dify.client.model.chat.ChatMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +37,10 @@ import java.util.Set;
 @Service
 public class CBTServiceImpl implements CBTService {
     private final CBTMapper cbtMapper;
+    private final DifyChatClient cbtAnalyzerClient;
+
     @Override
-    public List<CBTVO> getCBT() {
+    public List<CBTVO> getCBTs() {
         String studentId = BaseContext.getCurrentId();
         List<CBTVO> cbt = cbtMapper.getCBT();
         Set<Long> doneIds = cbtMapper.getDoneCBTIds(studentId);
@@ -36,36 +51,76 @@ public class CBTServiceImpl implements CBTService {
     }
 
     @Override
-    public List<CBTDeatilVO> getCBTDetail(Integer id) {
+    public List<CBTDetailVO> getCBTDetail(Integer id) {
         List<CbtExerciseDetail> details = cbtMapper.getCBTDetail(id);
-        List<CBTDeatilVO> cBTDeatilVOs = new ArrayList<>();
-        for(CbtExerciseDetail detail:details){
-            CBTDeatilVO cbtDeatilVO = new CBTDeatilVO();
-            BeanUtils.copyProperties(detail, cbtDeatilVO);
-            if("multiple_choice".equals(detail.getType()) || "single_choice".equals(detail.getType()));
-            {
-                ObjectMapper mapper = new ObjectMapper();
-                List<String> list = null;
-                try {
-                    list = mapper.readValue(detail.getOptions(), new TypeReference<List<String>>() {});
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                cbtDeatilVO.setOptions(list);
+        List<CBTDetailVO> cBTDetailVOs = new ArrayList<>();
+        for (CbtExerciseDetail detail : details) {
+            CBTDetailVO cbtDetailVO = new CBTDetailVO();
+            BeanUtils.copyProperties(detail, cbtDetailVO);
+            if ("evidence".equals(detail.getType())) {
+                var placeholders = new CBTDetailVO.Placeholders();
+                placeholders.setSupport(detail.getSupport());
+                placeholders.setAgainst(detail.getAgainst());
+                cbtDetailVO.setPlaceholders(placeholders);
             }
-            if("evidence".equals(detail.getType()))
-            {
-                cbtDeatilVO.setPlaceholders(Map.of("support",detail.getSupport(),"against",detail.getAgainst()));
-            }
-            cBTDeatilVOs.add(cbtDeatilVO);
+            cBTDetailVOs.add(cbtDetailVO);
         }
-        return cBTDeatilVOs;
+        return cBTDetailVOs;
     }
 
     @Override
-    public SseEmitter postCBT(List<CBTDTO> answer, Integer id) {
-        List<CBTVO> questions = cbtMapper.getCBT();
-        //TODO 用ai判题，question是题目，answer是答案
+    public SseEmitter postCBT(List<CBTDTO> answer, Integer id) throws DifyApiException, IOException {
+        List<CbtExerciseDetail> questions = cbtMapper.getCBTDetail(id);
+        // 将问题和答案进行匹配
+        List<Map.Entry<CbtExerciseDetail, CBTDTO>> qaPairs = new ArrayList<>();
+        for (int i = 0; i < questions.size(); i++) {
+            qaPairs.add(Map.entry(questions.get(i), answer.get(i)));
+        }
+
+        // 调用AI进行分析
+        SseEmitter emitter = new SseEmitter();
+
+        var message = ChatMessage.builder()
+                .user(BaseContext.getCurrentId())
+                .query(JSON.toJSONString(qaPairs))
+                .responseMode(ResponseMode.STREAMING)
+                .build();
+
+        cbtAnalyzerClient.sendChatMessageStream(message, new ChatStreamCallback() {
+            @SneakyThrows
+            @Override
+            public void onMessage(MessageEvent event) {
+                var messageVO=new MessageVO();
+                BeanUtils.copyProperties(event, messageVO);
+                emitter.send(messageVO);
+            }
+
+            @SneakyThrows
+            @Override
+            public void onMessageEnd(MessageEndEvent event) {
+                var messageEndVO=new MessageEndVO();
+                BeanUtils.copyProperties(event, messageEndVO);
+                emitter.send(messageEndVO);
+                emitter.complete();
+            }
+
+            @SneakyThrows
+            @Override
+            public void onError(ErrorEvent event) {
+                var errorVO=new ErrorVO();
+                BeanUtils.copyProperties(event, errorVO);
+                emitter.send(errorVO);
+                emitter.complete();
+            }
+
+            @SneakyThrows
+            @Override
+            public void onPing(PingEvent event) {
+                var pingVO=new PingVO();
+                BeanUtils.copyProperties(event, pingVO);
+                emitter.send(pingVO);
+            }
+        });
         return null;
     }
 

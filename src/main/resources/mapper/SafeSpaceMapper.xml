@@ -3,7 +3,7 @@
 <mapper namespace="com.solaceisle.mapper.SafeSpaceMapper">
 
 
-    <select id="page" resultType="com.solaceisle.pojo.po.SafeSpacePageVO">
+    <select id="page" resultType="com.solaceisle.pojo.vo.SafeSpacePageVO">
         select * from safe_space
         <if test="order==1">
             order by create_time desc

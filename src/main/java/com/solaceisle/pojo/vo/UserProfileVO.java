@@ -1,7 +1,5 @@
-package com.solaceisle.pojo.po;
+package com.solaceisle.pojo.vo;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data

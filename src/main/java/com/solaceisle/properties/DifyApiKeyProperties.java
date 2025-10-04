@@ -14,4 +14,8 @@ public class DifyApiKeyProperties {
     private String chatPartner;
 
     private String diaryEmotionRank;
+
+    private String suggestionGenerator;
+
+    private String cbtAnalyzer;
 }

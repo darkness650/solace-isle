@@ -1,4 +1,4 @@
-package com.solaceisle.pojo.po;
+package com.solaceisle.pojo.vo;
 
 import lombok.Data;
 
@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class CBTDeatilVO {
+public class CBTDetailVO {
+
     private String type;
 
     private String title;
@@ -17,6 +18,14 @@ public class CBTDeatilVO {
 
     private String placeholder;
 
-    private Map<String,String> placeholders;
+    private Placeholders placeholders;
+
+    @Data
+    public static class Placeholders{
+
+        private String support;
+
+        private String against;
+    }
 
 }

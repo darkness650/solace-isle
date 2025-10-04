@@ -1,7 +1,7 @@
 package com.solaceisle.service;
 
-import com.solaceisle.pojo.po.MoodVO;
-import com.solaceisle.pojo.po.TrackVO;
+import com.solaceisle.pojo.vo.MoodVO;
+import com.solaceisle.pojo.vo.TrackVO;
 
 import java.util.List;
 

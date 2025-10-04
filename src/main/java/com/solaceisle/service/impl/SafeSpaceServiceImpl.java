@@ -7,14 +7,13 @@ import com.solaceisle.mapper.SafeSpaceMapper;
 import com.solaceisle.pojo.dto.CommentDTO;
 import com.solaceisle.pojo.dto.PageQuertDTO;
 import com.solaceisle.pojo.entity.UserSafeSpaceLiked;
-import com.solaceisle.pojo.po.SafeSpacePageVO;
+import com.solaceisle.pojo.vo.SafeSpacePageVO;
 import com.solaceisle.result.PageResult;
 import com.solaceisle.service.SafeSpaceService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;

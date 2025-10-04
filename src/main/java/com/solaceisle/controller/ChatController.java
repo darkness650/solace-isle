@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
@@ -33,5 +34,11 @@ public class ChatController {
     public Result<?> stopChat(@PathVariable String taskId) throws DifyApiException, IOException {
         chatService.stopChat(taskId);
         return Result.success();
+    }
+
+    @GetMapping
+    public Result<List<String>> getIntroSuggestions() throws DifyApiException, IOException {
+        List<String> suggestions = chatService.getIntroSuggestions();
+        return Result.success(suggestions);
     }
 }

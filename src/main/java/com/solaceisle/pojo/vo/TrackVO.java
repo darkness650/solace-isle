@@ -1,4 +1,4 @@
-package com.solaceisle.pojo.po;
+package com.solaceisle.pojo.vo;
 
 import com.solaceisle.pojo.entity.Track;
 import lombok.Data;

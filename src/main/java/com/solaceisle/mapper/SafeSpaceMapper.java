@@ -4,12 +4,9 @@ import com.github.pagehelper.Page;
 import com.solaceisle.pojo.dto.CommentDTO;
 import com.solaceisle.pojo.dto.PageQuertDTO;
 import com.solaceisle.pojo.entity.UserSafeSpaceLiked;
-import com.solaceisle.pojo.po.SafeSpacePageVO;
+import com.solaceisle.pojo.vo.SafeSpacePageVO;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Mapper

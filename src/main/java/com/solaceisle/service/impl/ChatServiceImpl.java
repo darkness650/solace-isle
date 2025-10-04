@@ -1,5 +1,8 @@
 package com.solaceisle.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.solaceisle.constant.MessageConstant;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.UserMapper;
 import com.solaceisle.pojo.entity.User;
@@ -7,6 +10,7 @@ import com.solaceisle.pojo.vo.chat.*;
 import com.solaceisle.service.ChatService;
 import io.github.imfangs.dify.client.DifyChatflowClient;
 import io.github.imfangs.dify.client.callback.ChatflowStreamCallback;
+import io.github.imfangs.dify.client.enums.ResponseMode;
 import io.github.imfangs.dify.client.event.*;
 import io.github.imfangs.dify.client.exception.DifyApiException;
 import io.github.imfangs.dify.client.model.chat.ChatMessage;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -128,5 +133,18 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void stopChat(String taskId) throws DifyApiException, IOException {
         chatPartnerClient.stopChatMessage(taskId, BaseContext.getCurrentId());
+    }
+
+    @Override
+    public List<String> getIntroSuggestions() throws DifyApiException, IOException {
+        var message = ChatMessage.builder()
+                .user(BaseContext.getCurrentId())
+                .responseMode(ResponseMode.BLOCKING)
+                .query(MessageConstant.INTRO_SUGGESTION_QUERY)
+                .build();
+
+        var response = chatPartnerClient.sendChatMessage(message);
+        String answer = response.getAnswer();
+        return JSON.parseArray(answer, String.class);
     }
 }

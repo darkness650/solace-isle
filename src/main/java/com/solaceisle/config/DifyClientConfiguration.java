@@ -28,4 +28,16 @@ public class DifyClientConfiguration {
         return DifyClientFactory.createCompletionClient(
                 difyProperties.getUrl(), difyProperties.getApiKey().getDiaryEmotionRank());
     }
+
+    @Bean
+    public DifyChatClient suggestionGeneratorClient(DifyProperties difyProperties) {
+        return DifyClientFactory.createChatClient(
+                difyProperties.getUrl(), difyProperties.getApiKey().getSuggestionGenerator());
+    }
+
+    @Bean
+    public DifyChatClient cbtAnalyzerClient(DifyProperties difyProperties) {
+        return DifyClientFactory.createChatClient(
+                difyProperties.getUrl(), difyProperties.getApiKey().getCbtAnalyzer());
+    }
 }
