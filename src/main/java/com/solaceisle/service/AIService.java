@@ -1,7 +1,6 @@
 package com.solaceisle.service;
 
 import com.solaceisle.pojo.vo.DiaryVO;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 
