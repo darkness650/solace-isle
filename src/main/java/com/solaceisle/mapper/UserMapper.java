@@ -3,8 +3,7 @@ package com.solaceisle.mapper;
 import com.solaceisle.pojo.dto.SettingDTO;
 import com.solaceisle.pojo.entity.Setting;
 import com.solaceisle.pojo.entity.User;
-import com.solaceisle.pojo.po.SettingVO;
-import com.solaceisle.pojo.po.UserChangeVO;
+import com.solaceisle.pojo.vo.UserChangeVO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
