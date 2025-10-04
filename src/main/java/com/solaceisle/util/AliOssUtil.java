@@ -4,28 +4,38 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
+import com.solaceisle.properties.AliOssProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 
-@Data
-@AllArgsConstructor
+@Component
 @Slf4j
 public class AliOssUtil {
 
-    private String endpoint;
-    private String accessKeyId;
-    private String accessKeySecret;
-    private String bucketName;
+    private final String endpoint;
+    private final String accessKeyId;
+    private final String accessKeySecret;
+    private final String bucketName;
+
+    @Autowired
+    public AliOssUtil(AliOssProperties aliOssProperties) {
+        endpoint = aliOssProperties.getEndpoint();
+        accessKeyId = aliOssProperties.getAccessKeyId();
+        accessKeySecret = aliOssProperties.getAccessKeySecret();
+        bucketName = aliOssProperties.getBucketName();
+    }
 
     /**
      * 文件上传
      *
-     * @param bytes
-     * @param objectName
-     * @return
+     * @param bytes  文件字节数组
+     * @param objectName 文件名（包含路径）
+     * @return 文件访问路径
      */
     public String upload(byte[] bytes, String objectName) {
 

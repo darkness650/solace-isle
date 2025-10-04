@@ -115,7 +115,7 @@ solace:
     access-key-secret: ${solace.alioss.access-key-secret}
     bucket-name: ${solace.alioss.bucket-name}
     endpoint: ${solace.alioss.endpoint}
-    # 心理健康中心热线电话
+  # 心理健康中心热线电话
   hotline: ${solace.hotline}
   dify:
     url: ${solace.dify.url}

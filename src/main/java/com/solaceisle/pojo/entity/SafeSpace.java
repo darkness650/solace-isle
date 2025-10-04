@@ -3,8 +3,6 @@ package com.solaceisle.pojo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Entity
 @Data
 @Table(name = "safe_space")
@@ -24,8 +22,8 @@ public class SafeSpace {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "like")
-    private Integer like;
+    @Column(name = "like_count")
+    private Integer like_count;
 
     @Column(name = "create_time")
     private String createTime;
