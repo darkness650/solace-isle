@@ -16,6 +16,14 @@
     <select id="findByStudentIdAndCreateTime" resultType="com.solaceisle.pojo.entity.Diary">
         select * from diary where student_id=#{currentId} and create_time>=#{createTime}
     </select>
-
+    <select id="getSumDiary" resultType="java.lang.Integer">
+        select count(*) from diary where student_id=#{studentId}
+    </select>
+    <select id="getCurrentMood" resultType="com.solaceisle.pojo.entity.Diary">
+        select * from diary where student_id=#{studentId} order by create_time desc limit 1
+    </select>
+    <select id="getRecentTrack" resultType="com.solaceisle.pojo.entity.Diary">
+        select * from diary where student_id=#{studentId} order by create_time desc limit #{days}
+    </select>
 </mapper>
 

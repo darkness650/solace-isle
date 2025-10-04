@@ -1,5 +1,6 @@
 package com.solaceisle.service;
 
+import com.solaceisle.pojo.vo.AchievementsVO;
 import com.solaceisle.pojo.vo.MoodVO;
 import com.solaceisle.pojo.vo.TrackVO;
 
@@ -12,5 +13,7 @@ public interface DashboardService {
     TrackVO getRecentTrack(int days);
 
     List<String> getRemind();
+
+    List<AchievementsVO> getAchievements();
 }
 

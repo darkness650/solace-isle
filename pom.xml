@@ -152,6 +152,18 @@
             <version>3.0.5</version>
             <scope>test</scope>
         </dependency>
+        <!-- AOP -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+
+        </dependency>
 
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
