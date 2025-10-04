@@ -1,12 +1,14 @@
 package com.solaceisle.aspact;
 
 import com.solaceisle.annotation.AutoFill;
+import com.solaceisle.constant.RemindConstant;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.AchievementMapper;
 import com.solaceisle.mapper.CBTMapper;
 import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.mapper.SafeSpaceMapper;
 import com.solaceisle.pojo.enumeration.OperatorType;
+import com.solaceisle.socketserver.WebSocketServer;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +32,11 @@ public class AutoFillAspact {
     private final SafeSpaceMapper safeSpaceMapper;
     private final AchievementMapper achievementMapper;
     private final CBTMapper cbtMapper;
+    private final WebSocketServer webSocketServer;
     @Pointcut("execution(* com.solaceisle.mapper.*.*(..)) && @annotation(com.solaceisle.annotation.AutoFill)")
     public void autoFIllPointCut(){}
+    @Pointcut("execution(* com.solaceisle.mapper.*.*(..)) && @annotation(com.solaceisle.annotation.Achieve)")
+    public void sendMessage(){}
     @After("autoFIllPointCut()")
     public void autoFill(JoinPoint joinPoint){
         MethodSignature signature =(MethodSignature) joinPoint.getSignature();
@@ -123,5 +128,9 @@ public class AutoFillAspact {
                 log.info("用户{}已获得CBT成就",BaseContext.getCurrentId());
             }
         }
+    }
+    @After("sendMessage()")
+    public void sendMessageAfter(JoinPoint joinPoint){
+        webSocketServer.sendToClient(BaseContext.getCurrentId(), RemindConstant.CONGRATULATIONS);
     }
 }

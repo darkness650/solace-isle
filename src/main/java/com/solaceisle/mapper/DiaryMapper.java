@@ -18,7 +18,7 @@ public interface DiaryMapper {
     @AutoFill(value = OperatorType.DIARY)
     void insert(Diary diary);
 
-    Diary findByStudentIdAndCreateTime(String currentId, LocalDate localDate);
+    Diary findByStudentIdAndCreateTime(String currentId, LocalDate createTime);
 
     Integer getSumDiary(String studentId);
 

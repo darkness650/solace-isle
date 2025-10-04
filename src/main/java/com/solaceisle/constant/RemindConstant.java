@@ -51,6 +51,8 @@ public class RemindConstant {
     public static final String LATE_NIGHT_VALUE = "深夜了，早点睡觉吧，有什么不开心的可以去和ai助手聊聊";
 
     public static final String GREETINGS="greetings";
+
+    public static final String CONGRATULATIONS="恭喜你，达成一个新成就";
     // ================== 聚合常量 ==================
     /**
      * 前三条提醒的只读 Map，保持插入顺序。
