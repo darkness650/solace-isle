@@ -2,27 +2,31 @@ package com.solaceisle.service.impl;
 
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.exception.BaseException;
-import com.solaceisle.mapper.DashboardMapper;
+import com.solaceisle.mapper.AchievementMapper;
+import com.solaceisle.mapper.DiaryMapper;
+import com.solaceisle.pojo.entity.Achievement;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.entity.Track;
+import com.solaceisle.pojo.vo.AchievementsVO;
 import com.solaceisle.pojo.vo.MoodVO;
 import com.solaceisle.pojo.vo.TrackVO;
 import com.solaceisle.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
-
-    private final DashboardMapper dashboardMapper;
+    private final DiaryMapper diaryMapper;
+    private final AchievementMapper achievementMapper;
     private final RedisTemplate redisTemplate;
     private String currentUserIdOrThrow() {
         String id = BaseContext.getCurrentId();
@@ -36,7 +40,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public MoodVO getMood() {
         String studentId = currentUserIdOrThrow();
-        Diary diary = dashboardMapper.getCurrentMood(studentId);
+        Diary diary = diaryMapper.getCurrentMood(studentId);
         MoodVO moodVO = new MoodVO();
         moodVO.setEmoji(diary.getEmoji());
         moodVO.setDescription(diary.getText());
@@ -47,7 +51,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public TrackVO getRecentTrack(int days) {
 
-        List<Diary> diaries = dashboardMapper.getRecentTrack(currentUserIdOrThrow(), days);
+        List<Diary> diaries = diaryMapper.getRecentTrack(currentUserIdOrThrow(), days);
         TrackVO trackVO = new TrackVO();
         trackVO.setConsecutiveDays(diaries.get(0).getConsecutiveDays());
         List<Track> tracks = new ArrayList<>();
@@ -76,7 +80,33 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<String> getRemind() {
-        return List.of();
+        String studentId = currentUserIdOrThrow();
+        HashMap<String, String> map = (HashMap<String, String>) redisTemplate.opsForHash().entries(studentId);
+        List<String> reminds = new ArrayList<>();
+        for (String key : map.keySet()) {
+            if(key.equals("sessionId")){
+                continue;
+            }
+            reminds.add(key);
+        }
+        return reminds;
+    }
+
+    @Override
+    public List<AchievementsVO> getAchievements() {
+        String studentId = currentUserIdOrThrow();
+        List<Achievement> achievements= achievementMapper.getAchievements();
+        List<AchievementsVO> achievementsVOS = new ArrayList<>();
+        Map<Integer, LocalDateTime> achieve_Achievements = achievementMapper.getAchievementsIds(studentId);
+        for(Achievement achievement:achievements){
+            AchievementsVO achievementsVO = new AchievementsVO();
+            BeanUtils.copyProperties(achievement,achievementsVO);
+            if(achieve_Achievements.keySet().contains(achievement.getId())){
+                achievementsVO.setAchievedAt(achieve_Achievements.get(achievement.getId()));
+            }
+            else achievementsVO.setAchievedAt(null);
+        }
+        return achievementsVOS;
     }
 
 }

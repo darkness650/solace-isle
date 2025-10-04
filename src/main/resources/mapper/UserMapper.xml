@@ -43,4 +43,11 @@
     <select id="listAllUserId" resultType="java.lang.String">
         select student_id from "user"
     </select>
+
+    <insert id="register" parameterType="com.solaceisle.pojo.dto.RegisteDTO">
+        insert into "user"(student_id, email,nickname, password) VALUES (#{studentId}, #{email}, #{nickname}, #{password})
+    </insert>
+    <select id="findPassword" parameterType="com.solaceisle.pojo.dto.FindPasswordDTO">
+        update "user" set password = #{password} where email = #{email}
+    </select>
 </mapper>

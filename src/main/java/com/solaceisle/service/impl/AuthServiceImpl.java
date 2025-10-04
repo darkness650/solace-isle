@@ -4,7 +4,7 @@ import com.solaceisle.constant.AuthConstant;
 import com.solaceisle.exception.IllegalEmailException;
 import com.solaceisle.exception.IllegalLoginMessageException;
 import com.solaceisle.exception.IllegalRegisteMsgException;
-import com.solaceisle.mapper.AuthMapper;
+import com.solaceisle.mapper.UserMapper;
 import com.solaceisle.pojo.dto.FindPasswordDTO;
 import com.solaceisle.pojo.dto.LoginDTO;
 import com.solaceisle.pojo.dto.RegisteDTO;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final AuthMapper authMapper;
+    private final UserMapper userMapper;
     private final JwtProperties jwtProperties;
     private final RedisTemplate<String,Object> redisTemplate;
     private final EmailUtil emailUtil;
@@ -40,13 +40,13 @@ public class AuthServiceImpl implements AuthService {
         String id=null;
         if(account.contains("@"))
         {
-            id= authMapper.loginByEmail(account,password);
+            id= userMapper.loginByEmail(account,password);
             if(id==null)
                 throw new IllegalLoginMessageException(AuthConstant.ACCOUNT_PASSWARD_ERROR);
         }
         else
         {
-            id= authMapper.loginByUsername(account,password);
+            id= userMapper.loginByUsername(account,password);
             if(id==null)
                 throw new IllegalLoginMessageException(AuthConstant.ACCOUNT_PASSWARD_ERROR);
         }
@@ -85,8 +85,8 @@ public class AuthServiceImpl implements AuthService {
         }
         log.info("验证码校验通过");
         redisTemplate.delete(registeDTO.getEmail());
-        authMapper.register(registeDTO);
-        authMapper.setSetting(registeDTO.getStudentId());
+        userMapper.register(registeDTO);
+        userMapper.setSetting(registeDTO.getStudentId());
     }
 
     @Override
@@ -99,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
         }
         log.info("验证码校验通过");
         redisTemplate.delete(findPasswordDTO.getEmail());
-        authMapper.findPassword(findPasswordDTO);
+        userMapper.findPassword(findPasswordDTO);
     }
 
 

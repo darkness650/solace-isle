@@ -1,6 +1,8 @@
 package com.solaceisle.mapper;
 
+import com.solaceisle.annotation.AutoFill;
 import com.solaceisle.pojo.entity.CbtExerciseDetail;
+import com.solaceisle.pojo.enumeration.OperatorType;
 import com.solaceisle.pojo.vo.CBTVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -13,7 +15,7 @@ public interface CBTMapper {
 
     @Select("select * from cbt_exercise")
     List<CBTVO> getCBT();
-
+    @AutoFill(value = OperatorType.CBT)
     @Select("select cbt_exercise_id from user_cbt_exercise where student_id = #{studentId}")
     Set<Long> getDoneCBTIds(String studentId);
 
