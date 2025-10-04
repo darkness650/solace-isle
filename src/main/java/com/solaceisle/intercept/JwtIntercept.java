@@ -40,7 +40,7 @@ public class JwtIntercept implements HandlerInterceptor {
             Map<String, Object> claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), jwt);
             String id = claims.get("id").toString();
             String sessionId = claims.get("sessionId").toString();
-            String redisValue = redisTemplate.opsForValue().get(id);
+            String redisValue = redisTemplate.opsForHash().get(id, "sessionId").toString();
             log.info("redisValue:{}", redisValue);
             if (!sessionId.equals(redisValue)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

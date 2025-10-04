@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/dashboard")
@@ -26,6 +28,10 @@ public class DashboardController {
     @GetMapping("/recentTrack")
     public Result<TrackVO> getRecentTrack(@RequestParam int days) {
         return Result.success(dashboardService.getRecentTrack(days));
+    }
+    @GetMapping("/remind")
+    public Result<List<String>> getRemind() {
+        return Result.success(dashboardService.getRemind());
     }
 }
 

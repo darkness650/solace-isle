@@ -1,5 +1,8 @@
 package com.solaceisle.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.CBTMapper;
 import com.solaceisle.pojo.dto.CBTDTO;
@@ -39,6 +42,17 @@ public class CBTServiceImpl implements CBTService {
         for(CbtExerciseDetail detail:details){
             CBTDeatilVO cbtDeatilVO = new CBTDeatilVO();
             BeanUtils.copyProperties(detail, cbtDeatilVO);
+            if("multiple_choice".equals(detail.getType()) || "single_choice".equals(detail.getType()));
+            {
+                ObjectMapper mapper = new ObjectMapper();
+                List<String> list = null;
+                try {
+                    list = mapper.readValue(detail.getOptions(), new TypeReference<List<String>>() {});
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                cbtDeatilVO.setOptions(list);
+            }
             if("evidence".equals(detail.getType()))
             {
                 cbtDeatilVO.setPlaceholders(Map.of("support",detail.getSupport(),"against",detail.getAgainst()));

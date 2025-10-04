@@ -7,6 +7,8 @@ import com.solaceisle.pojo.po.SettingVO;
 import com.solaceisle.pojo.po.UserChangeVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
@@ -21,5 +23,7 @@ public interface UserMapper {
     void updatePassword(String studentId, String newPassword);
 
     void updateEmail(String studentId, String email);
+
+    List<String> listAllUserId();
 }
 

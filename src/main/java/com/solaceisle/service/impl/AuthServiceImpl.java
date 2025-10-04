@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final JwtProperties jwtProperties;
-    private final RedisTemplate<String,String> redisTemplate;
+    private final RedisTemplate<String,Object> redisTemplate;
     private final EmailUtil emailUtil;
     @Override
     public String login(LoginDTO loginDTO) {
@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("用户{}登录，生成sessionId:{}",id,sessionId.toString());
         Map<String,Object> claims= Map.of("id",id,"sessionId",sessionId.toString());
         String jwt= JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
-        redisTemplate.opsForValue().set(id,sessionId.toString(), Duration.of(jwtProperties.getUserTtl(), TimeUnit.MILLISECONDS.toChronoUnit()));
+        redisTemplate.opsForHash().put(id,"sessionId",sessionId.toString());
         return jwt;
 
     }
@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(RegisteDTO registeDTO) {
-        String code=redisTemplate.opsForValue().get(registeDTO.getEmail());
+        String code= redisTemplate.opsForValue().get(registeDTO.getEmail()).toString();
         if(code==null || !code.equals(registeDTO.getCode()))
         {
            // log.info("验证码校验失败，code:{},realcode:{}",registeDTO.getCode(),code);
@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void findPassword(FindPasswordDTO findPasswordDTO) {
-        String code=redisTemplate.opsForValue().get(findPasswordDTO.getEmail());
+        String code= redisTemplate.opsForValue().get(findPasswordDTO.getEmail()).toString();
         if(code==null || !code.equals(findPasswordDTO.getCode()))
         {
             log.info("验证码校验失败，code:{},realcode:{}",findPasswordDTO.getCode(),code);

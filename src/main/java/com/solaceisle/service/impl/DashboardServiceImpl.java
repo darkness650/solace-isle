@@ -10,6 +10,7 @@ import com.solaceisle.pojo.po.TrackVO;
 import com.solaceisle.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ import java.util.List;
 public class DashboardServiceImpl implements DashboardService {
 
     private final DashboardMapper dashboardMapper;
-
+    private final RedisTemplate redisTemplate;
     private String currentUserIdOrThrow() {
         String id = BaseContext.getCurrentId();
         if (id == null || id.isBlank()) {
@@ -71,6 +72,11 @@ public class DashboardServiceImpl implements DashboardService {
         }
         trackVO.setTracks(tracks);
         return trackVO;
+    }
+
+    @Override
+    public List<String> getRemind() {
+        return List.of();
     }
 
 }

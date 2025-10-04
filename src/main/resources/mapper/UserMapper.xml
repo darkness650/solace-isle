@@ -40,4 +40,7 @@
     <select id="getUserProfile" resultType="com.solaceisle.pojo.entity.User">
         select * from "user" where student_id= #{studentId}
     </select>
+    <select id="listAllUserId" resultType="java.lang.String">
+        select student_id from "user"
+    </select>
 </mapper>
