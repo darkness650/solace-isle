@@ -91,15 +91,17 @@ public class DashboardServiceImpl implements DashboardService {
         String studentId = currentUserIdOrThrow();
         HashMap<String, String> map = (HashMap<String, String>) redisTemplate.opsForHash().entries(studentId);
         List<String> reminds = new ArrayList<>();
+        List<String> deleteKeys = new ArrayList<>();
         for (String key : map.keySet()) {
             if(key.equals("sessionId")){
                 continue;
             }
             reminds.add(map.get(key));
+            deleteKeys.add(key);
         }
-        // TODO delete出现未知错误
-        redisTemplate.opsForHash().delete(studentId);
-        redisTemplate.opsForHash().put(studentId,"sessionId",map.get("sessionId"));
+        if(!deleteKeys.isEmpty()){
+            redisTemplate.opsForHash().delete(studentId,deleteKeys.toArray());
+        }
         return reminds;
     }
 

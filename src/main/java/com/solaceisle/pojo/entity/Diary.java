@@ -1,7 +1,9 @@
 package com.solaceisle.pojo.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "diary")
 @Data
+@Builder
 public class Diary {
 
     @Id
@@ -47,4 +50,21 @@ public class Diary {
      */
     @Column(name = "score")
     private int score;
+
+    public Diary() {
+
+    }
+
+    public Diary(Long id, String studentId, String emoji, String emotion, String text, String image, String tags, LocalDate createTime, int consecutiveDays, int score) {
+        this.id = id;
+        this.studentId = studentId;
+        this.emoji = emoji;
+        this.emotion = emotion;
+        this.text = text;
+        this.image = image;
+        this.tags = tags;
+        this.createTime = createTime;
+        this.consecutiveDays = consecutiveDays;
+        this.score = score;
+    }
 }

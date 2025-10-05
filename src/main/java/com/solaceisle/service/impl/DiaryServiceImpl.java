@@ -67,19 +67,21 @@ public class DiaryServiceImpl implements DiaryService {
 //    @Transactional
     public void addDiary(DiaryDTO diaryDTO) throws DifyApiException, IOException {
         Diary yesterdaysDiary = diaryMapper.findByStudentIdAndCreateTime(BaseContext.getCurrentId(), LocalDate.now().minusDays(1));
-        Diary diary = new Diary();
+        Diary diary = Diary
+                .builder()
+                .emoji(diaryDTO.getMoodEmoji())
+                .emotion(diaryDTO.getMoodLabel())
+                .text(diaryDTO.getContent())
+                .image(diaryDTO.getImage())
+                .createTime(LocalDate.now())
+                .tags(diaryDTO.getTags().toString())
+                .studentId(BaseContext.getCurrentId())
+                .build();
         if (yesterdaysDiary == null) {
             diary.setConsecutiveDays(1);
         } else {
             diary.setConsecutiveDays(yesterdaysDiary.getConsecutiveDays() + 1);
         }
-        diary.setEmoji(diaryDTO.getMoodEmoji());
-        diary.setEmotion(diaryDTO.getMoodLabel());
-        diary.setText(diaryDTO.getContent());
-        diary.setImage(diaryDTO.getImage());
-        diary.setCreateTime(LocalDate.now());
-        diary.setStudentId(BaseContext.getCurrentId());
-        diary.setTags(diaryDTO.getTags().toString());
 
         // 调用AI进行打分
         Map<String, Object> inputs = new HashMap<>();
