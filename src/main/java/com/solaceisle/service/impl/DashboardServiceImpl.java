@@ -107,6 +107,7 @@ public class DashboardServiceImpl implements DashboardService {
         for(Achievement achievement:achievements){
             AchievementsVO achievementsVO = new AchievementsVO();
             BeanUtils.copyProperties(achievement,achievementsVO);
+            achievementsVO.setName(achievement.getTitle());
             if(achieve_Achievements.keySet().contains(achievement.getId())){
                 achievementsVO.setAchievedAt(achieve_Achievements.get(achievement.getId()));
             }

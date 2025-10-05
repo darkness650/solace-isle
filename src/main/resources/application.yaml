@@ -125,4 +125,5 @@ solace:
       diary-emotion-rank: ${solace.dify.api-key.diary-emotion-rank}
       suggestion-generator: ${solace.dify.api-key.suggestion-generator}
       cbt-analyzer: ${solace.dify.api-key.cbt-analyzer}
-
+  redis:
+    expiration: ${solace.redis.expiration}

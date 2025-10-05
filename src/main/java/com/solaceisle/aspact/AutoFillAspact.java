@@ -1,6 +1,7 @@
 package com.solaceisle.aspact;
 
 import com.solaceisle.annotation.AutoFill;
+import com.solaceisle.constant.AchievementConstants;
 import com.solaceisle.constant.RemindConstant;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.AchievementMapper;
@@ -49,17 +50,17 @@ public class AutoFillAspact {
             Integer sumDiary= diaryMapper.getSumDiary(studentId);
             Integer maxConsecutiveDays=achievementMapper.getMaxProcess(studentId);
             if(sumDiary==1){
-                achievementMapper.achieve(studentId,1, LocalDateTime.now());
+                achievementMapper.achieve(studentId, AchievementConstants.FIRST_DIARY, LocalDateTime.now());
                 if(maxConsecutiveDays==null)
                 {
                     achievementMapper.recordConsecutiveDays(studentId,1);
                 }
             }
             else if(sumDiary==7){
-                achievementMapper.achieve(studentId,2, LocalDateTime.now());
+                achievementMapper.achieve(studentId,AchievementConstants.DIARY_7, LocalDateTime.now());
             }
             else if(sumDiary==30){
-                achievementMapper.achieve(studentId,3, LocalDateTime.now());
+                achievementMapper.achieve(studentId,AchievementConstants.DIARY_30, LocalDateTime.now());
             }
             int consecutiveDays=diaryMapper.getCurrentMood(studentId).getConsecutiveDays();
             if(consecutiveDays>maxConsecutiveDays)
@@ -67,19 +68,19 @@ public class AutoFillAspact {
                 achievementMapper.recordConsecutiveDays(studentId,consecutiveDays);
                 if(consecutiveDays==3)
                 {
-                    achievementMapper.achieve(studentId,4, LocalDateTime.now());
+                    achievementMapper.achieve(studentId,AchievementConstants.STREAK_3, LocalDateTime.now());
                 }
                 else if(consecutiveDays==7)
                 {
-                    achievementMapper.achieve(studentId,5, LocalDateTime.now());
+                    achievementMapper.achieve(studentId,AchievementConstants.DIARY_7, LocalDateTime.now());
                 }
                 else if(consecutiveDays==10)
                 {
-                    achievementMapper.achieve(studentId,12, LocalDateTime.now());
+                    achievementMapper.achieve(studentId,AchievementConstants.GIVE_LIKE_10, LocalDateTime.now());
                 }
                 else if(consecutiveDays==14)
                 {
-                    achievementMapper.achieve(studentId,6, LocalDateTime.now());
+                    achievementMapper.achieve(studentId,AchievementConstants.STREAK_14, LocalDateTime.now());
                 }
             }
         }
@@ -87,10 +88,10 @@ public class AutoFillAspact {
         {
             int safeCount=safeSpaceMapper.getSafeCount(BaseContext.getCurrentId());
             if(safeCount==1){
-                achievementMapper.achieve(BaseContext.getCurrentId(),7, LocalDateTime.now());
+                achievementMapper.achieve(BaseContext.getCurrentId(),AchievementConstants.FIRST_SAFE_POST, LocalDateTime.now());
             }
             else if(safeCount==10){
-                achievementMapper.achieve(BaseContext.getCurrentId(),8, LocalDateTime.now());
+                achievementMapper.achieve(BaseContext.getCurrentId(),AchievementConstants.SAFE_POST_10, LocalDateTime.now());
             }
         }
         else if(operationType==OperatorType.LIKE)
@@ -101,7 +102,7 @@ public class AutoFillAspact {
             if(sumLikes==10)
             {
                 try{
-                    achievementMapper.achieve(BaseContext.getCurrentId(),10, LocalDateTime.now());
+                    achievementMapper.achieve(BaseContext.getCurrentId(),AchievementConstants.GIVE_LIKE_10, LocalDateTime.now());
                 }
                 catch(Exception e){
                     log.info("用户{}已获得点赞成就",BaseContext.getCurrentId());
@@ -112,7 +113,7 @@ public class AutoFillAspact {
             if(sumLikes==10)
             {
                 try{
-                    achievementMapper.achieve(likedId,9, LocalDateTime.now());
+                    achievementMapper.achieve(likedId,AchievementConstants.SAFE_LIKED_10, LocalDateTime.now());
                 }
                 catch(Exception e){
                     log.info("用户{}已获得点赞成就",likedId);
@@ -123,7 +124,7 @@ public class AutoFillAspact {
         {
             try{
                 if(cbtMapper.getDoneCBTIds(BaseContext.getCurrentId()).size()==1) {
-                    achievementMapper.achieve(BaseContext.getCurrentId(), 11, LocalDateTime.now());
+                    achievementMapper.achieve(BaseContext.getCurrentId(), AchievementConstants.FIRST_CBT, LocalDateTime.now());
                 }
             }catch(Exception e){
                 log.info("用户{}已获得CBT成就",BaseContext.getCurrentId());

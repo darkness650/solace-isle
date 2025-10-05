@@ -13,7 +13,7 @@ public class UserAchievement {
     private String studentId;
 
     @Column(name = "achievement_id")
-    private Integer achievementId;
+    private String achievementId;
 
     @Column(name = "finish_time")
     private String finishTime;
