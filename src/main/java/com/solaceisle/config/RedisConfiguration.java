@@ -11,8 +11,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @Slf4j
 public class RedisConfiguration {
-    @Value("${solace.redis.expiration-time}")
-    public static int EXPIRATION_TIME;
+
     @Bean
     public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         log.info("开始创建redis模板对象");

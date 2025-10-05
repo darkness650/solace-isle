@@ -126,4 +126,4 @@ solace:
       suggestion-generator: ${solace.dify.api-key.suggestion-generator}
       cbt-analyzer: ${solace.dify.api-key.cbt-analyzer}
   redis:
-    expiration: ${solace.redis.expiration}
+    expiration-time: ${solace.redis.expiration-time}
