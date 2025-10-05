@@ -1,5 +1,6 @@
 package com.solaceisle.service.impl;
 
+import com.solaceisle.config.RedisConfiguration;
 import com.solaceisle.constant.AuthConstant;
 import com.solaceisle.exception.IllegalEmailException;
 import com.solaceisle.exception.IllegalLoginMessageException;
@@ -66,12 +67,12 @@ public class AuthServiceImpl implements AuthService {
     public void sendCode(String email) {
         String code= UUID.randomUUID().toString().substring(0,6);
         try {
-            emailUtil.sendTextEmail(email, "心屿-SolaceIsle验证码", "您的验证码是：" + code + "，请勿泄露给他人,验证码在" + (jwtProperties.getUserTtl() / 60000) + "分钟内有效");
+            emailUtil.sendTextEmail(email, "心屿-SolaceIsle验证码", "您的验证码是：" + code + "，请勿泄露给他人,验证码在" + (RedisConfiguration.EXPIRATION_TIME)/60 + "分钟内有效");
         }catch (Exception e){
             e.printStackTrace();
             throw new IllegalEmailException(AuthConstant.ILLGAL_EMAIL);
         }
-        redisTemplate.opsForValue().set(email,code,Duration.of(jwtProperties.getUserTtl(), TimeUnit.MILLISECONDS.toChronoUnit()));
+        redisTemplate.opsForValue().set(email,code,Duration.of(RedisConfiguration.EXPIRATION_TIME, TimeUnit.SECONDS.toChronoUnit()));
 
     }
 
