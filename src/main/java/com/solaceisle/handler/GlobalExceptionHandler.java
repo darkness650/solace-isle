@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler
     public Result exceptionHandler(RuntimeException ex){
-        log.error("异常信息：{}", ex.getMessage());
+        log.error("异常信息：", ex);
         return Result.error(ex.getMessage());
     }
 

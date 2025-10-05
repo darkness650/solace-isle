@@ -1,9 +1,11 @@
 package com.solaceisle.pojo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Table(name = "user_achievement")
@@ -16,7 +18,7 @@ public class UserAchievement {
     private String achievementId;
 
     @Column(name = "finish_time")
-    private String finishTime;
+    private LocalDateTime finishTime;
 
     @Column(name = "progress")
     private Integer progress;

@@ -7,6 +7,7 @@ import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.pojo.entity.Achievement;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.entity.Track;
+import com.solaceisle.pojo.entity.UserAchievement;
 import com.solaceisle.pojo.vo.AchievementsVO;
 import com.solaceisle.pojo.vo.MoodVO;
 import com.solaceisle.pojo.vo.TrackVO;
@@ -103,13 +104,14 @@ public class DashboardServiceImpl implements DashboardService {
         String studentId = currentUserIdOrThrow();
         List<Achievement> achievements= achievementMapper.getAchievements();
         List<AchievementsVO> achievementsVOS = new ArrayList<>();
-        Map<Integer, LocalDateTime> achieve_Achievements = achievementMapper.getAchievementsIds(studentId);
+        Map<String, UserAchievement> achieve_Achievements = achievementMapper.getAchievementsIds(studentId);
         for(Achievement achievement:achievements){
             AchievementsVO achievementsVO = new AchievementsVO();
             BeanUtils.copyProperties(achievement,achievementsVO);
             achievementsVO.setName(achievement.getTitle());
-            if(achieve_Achievements.keySet().contains(achievement.getId())){
-                achievementsVO.setAchievedAt(achieve_Achievements.get(achievement.getId()));
+            if(achieve_Achievements.containsKey(achievement.getId())){
+                var finishTime = achieve_Achievements.get(achievement.getId()).getFinishTime();
+                achievementsVO.setAchievedAt(finishTime);
             }
             else achievementsVO.setAchievedAt(null);
             achievementsVOS.add(achievementsVO);

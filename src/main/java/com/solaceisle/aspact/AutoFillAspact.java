@@ -8,6 +8,7 @@ import com.solaceisle.mapper.AchievementMapper;
 import com.solaceisle.mapper.CBTMapper;
 import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.mapper.SafeSpaceMapper;
+import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.enumeration.OperatorType;
 import com.solaceisle.socketserver.WebSocketServer;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -24,9 +25,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
-// TODO
-//@Component
-//@Aspect
+@Component
+@Aspect
 @Slf4j
 public class AutoFillAspact {
 
@@ -48,10 +48,16 @@ public class AutoFillAspact {
         if(operationType==OperatorType.DIARY) {
             String studentId = BaseContext.getCurrentId();
             Integer sumDiary= diaryMapper.getSumDiary(studentId);
-            Integer maxConsecutiveDays=achievementMapper.getMaxProcess(studentId);
+            Integer maxConsecutiveDays=null;
+            if(sumDiary!=0)
+            {
+                maxConsecutiveDays=achievementMapper.getMaxProcess(studentId);
+            }
+            if(maxConsecutiveDays==null)
+                maxConsecutiveDays=0;
             if(sumDiary==1){
                 achievementMapper.achieve(studentId, AchievementConstants.FIRST_DIARY, LocalDateTime.now());
-                if(maxConsecutiveDays==null)
+                if(maxConsecutiveDays==0)
                 {
                     achievementMapper.recordConsecutiveDays(studentId,1);
                 }
@@ -62,10 +68,12 @@ public class AutoFillAspact {
             else if(sumDiary==30){
                 achievementMapper.achieve(studentId,AchievementConstants.DIARY_30, LocalDateTime.now());
             }
-            int consecutiveDays=diaryMapper.getCurrentMood(studentId).getConsecutiveDays();
+            int consecutiveDays=0;
+            Diary currentMood = diaryMapper.getCurrentMood(studentId);
+            if(currentMood!=null){consecutiveDays=currentMood.getConsecutiveDays();}
             if(consecutiveDays>maxConsecutiveDays)
             {
-                achievementMapper.recordConsecutiveDays(studentId,consecutiveDays);
+                achievementMapper.updateConsecutiveDays(studentId,consecutiveDays);
                 if(consecutiveDays==3)
                 {
                     achievementMapper.achieve(studentId,AchievementConstants.STREAK_3, LocalDateTime.now());
@@ -76,7 +84,7 @@ public class AutoFillAspact {
                 }
                 else if(consecutiveDays==10)
                 {
-                    achievementMapper.achieve(studentId,AchievementConstants.GIVE_LIKE_10, LocalDateTime.now());
+                    achievementMapper.achieve(studentId,AchievementConstants.CONSECUTIVE_DAYS_10, LocalDateTime.now());
                 }
                 else if(consecutiveDays==14)
                 {

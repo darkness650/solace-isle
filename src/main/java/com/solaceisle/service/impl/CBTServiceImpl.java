@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class CBTServiceImpl implements CBTService {
     private final DifyChatClient cbtAnalyzerClient;
 
     @Override
+    @Transactional
     public List<CBTVO> getCBTs() {
         String studentId = BaseContext.getCurrentId();
         List<CbtExercise> cbts = cbtMapper.getCBT();
