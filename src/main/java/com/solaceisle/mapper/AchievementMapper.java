@@ -16,9 +16,9 @@ public interface AchievementMapper {
     @MapKey("achievement_id")
     Map<Integer, LocalDateTime> getAchievementsIds(String studentId);
     @Insert("insert into user_achievement(student_id, achievement_id, finish_time) values (#{studentId},#{achievementId},#{achieveTime})")
-    void achieve(String studentId, int achievementId, LocalDateTime achieveTime);
-    @Select("select max(process) from user_achievement where achievement_id=3 and student_id=#{studentId} ")
+    void achieve(String studentId, String achievementId, LocalDateTime achieveTime);
+    @Select("select max(process) from user_achievement where achievement_id= 'STREAK_3'and student_id=#{studentId} ")
     int getMaxProcess(String studentId);
-    @Insert("insert into user_achievement(student_id, achievement_id, process, finish_time) values (#{studentId},3,#{process},null)")
+    @Insert("insert into user_achievement(student_id, achievement_id, process, finish_time) values (#{studentId},'STREAK_3',#{process},null)")
     void recordConsecutiveDays(String studentId, int process);
 }

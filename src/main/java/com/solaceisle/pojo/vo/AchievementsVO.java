@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class AchievementsVO {
 
-    private String title;
+    private String name;
 
     private String description;
 

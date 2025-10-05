@@ -13,7 +13,7 @@ public class Achievement {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
-    private Long id;
+    private String id;
 
     @Column(name = "title")
     private String title;
