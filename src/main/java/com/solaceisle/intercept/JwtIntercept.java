@@ -35,6 +35,7 @@ public class JwtIntercept implements HandlerInterceptor {
             log.info("未授权");
             return false;
         }
+        log.info("前端发来的原始请求头：{}", header);
         String jwt = header.split(" ")[1];
         try {
             Map<String, Object> claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), jwt);

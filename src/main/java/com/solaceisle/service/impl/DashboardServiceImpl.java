@@ -42,6 +42,9 @@ public class DashboardServiceImpl implements DashboardService {
     public MoodVO getMood() {
         String studentId = currentUserIdOrThrow();
         Diary diary = diaryMapper.getCurrentMood(studentId);
+        if(diary==null){
+            return new MoodVO("😶","无记录","今天还没有写日记哦~");
+        }
         MoodVO moodVO = new MoodVO();
         moodVO.setEmoji(diary.getEmoji());
         moodVO.setDescription(diary.getText());
@@ -94,6 +97,7 @@ public class DashboardServiceImpl implements DashboardService {
             }
             reminds.add(map.get(key));
         }
+        // TODO delete出现未知错误
         redisTemplate.opsForHash().delete(studentId);
         redisTemplate.opsForHash().put(studentId,"sessionId",map.get("sessionId"));
         return reminds;
