@@ -7,6 +7,10 @@ public class MessageVO{
 
     private String taskId;
 
+    private String messageId;
+
+    private String conversationId;
+
     private String event;
 
     private String answer;

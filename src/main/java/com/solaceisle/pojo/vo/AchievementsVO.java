@@ -1,5 +1,6 @@
 package com.solaceisle.pojo.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class AchievementsVO {
 
     private String icon;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime achievedAt;
 }

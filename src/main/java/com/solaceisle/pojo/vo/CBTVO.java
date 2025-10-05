@@ -2,6 +2,8 @@ package com.solaceisle.pojo.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CBTVO {
     private Long id;
@@ -14,7 +16,7 @@ public class CBTVO {
 
     private String durationLabel;
 
-    private String tags;
+    private List<String> tags;
 
     private String coverColor;
 

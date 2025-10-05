@@ -3,6 +3,8 @@ package com.solaceisle.pojo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Table(name = "safe_space")
@@ -23,10 +25,10 @@ public class SafeSpace {
     private String text;
 
     @Column(name = "like_count")
-    private Integer like_count;
+    private Integer likeCount;
 
     @Column(name = "create_time")
-    private String createTime;
+    private LocalDateTime createTime;
 
 
 

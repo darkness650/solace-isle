@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler
-    public Result exceptionHandler(BaseException ex){
-        log.error("异常信息：{}", ex.getMessage());
+    public Result exceptionHandler(RuntimeException ex){
+        log.error("异常信息：", ex);
         return Result.error(ex.getMessage());
     }
 

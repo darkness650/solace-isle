@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Data
 public class CBTDetailVO {
-    private Integer id;
+    private String id;
 
     private String type;
 

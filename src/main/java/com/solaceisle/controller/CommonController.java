@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/common/upload")
+@RequestMapping("/common")
 @Tag(name= "通用接口")
 @Slf4j
 public class CommonController {

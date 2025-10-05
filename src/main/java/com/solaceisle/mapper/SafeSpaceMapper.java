@@ -3,7 +3,8 @@ package com.solaceisle.mapper;
 import com.github.pagehelper.Page;
 import com.solaceisle.annotation.AutoFill;
 import com.solaceisle.pojo.dto.CommentDTO;
-import com.solaceisle.pojo.dto.PageQuertDTO;
+import com.solaceisle.pojo.dto.PageQueryDTO;
+import com.solaceisle.pojo.entity.SafeSpace;
 import com.solaceisle.pojo.entity.UserSafeSpaceLiked;
 import com.solaceisle.pojo.enumeration.OperatorType;
 import com.solaceisle.pojo.vo.SafeSpacePageVO;
@@ -14,9 +15,9 @@ import java.util.Set;
 @Mapper
 public interface SafeSpaceMapper {
 
-    Page<SafeSpacePageVO> page(PageQuertDTO pageQuertDTO);
+    Page<SafeSpace> page(PageQueryDTO pageQueryDTO);
     @Select("select safe_space_id from user_safe_space_liked where student_id=#{studentId}")
-    Set<Integer> getLikedIds(String studentId);
+    Set<Long> getLikedIds(String studentId);
 
     @Select("select * from user_safe_space_liked where student_id=#{studentId} and safe_space_id=#{id}")
     UserSafeSpaceLiked getSafeSpaceLiked(String studentId, Integer id);

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.CBTMapper;
 import com.solaceisle.pojo.dto.CBTDTO;
+import com.solaceisle.pojo.entity.CbtExercise;
 import com.solaceisle.pojo.entity.CbtExerciseDetail;
 import com.solaceisle.pojo.vo.CBTDetailVO;
 import com.solaceisle.pojo.vo.CBTVO;
@@ -28,10 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -42,12 +40,18 @@ public class CBTServiceImpl implements CBTService {
     @Override
     public List<CBTVO> getCBTs() {
         String studentId = BaseContext.getCurrentId();
-        List<CBTVO> cbt = cbtMapper.getCBT();
+        List<CbtExercise> cbts = cbtMapper.getCBT();
         Set<Long> doneIds = cbtMapper.getDoneCBTIds(studentId);
-        for (CBTVO cbtVO : cbt) {
-            cbtVO.setFinished(doneIds.contains(cbtVO.getId()));
+        List<CBTVO> cbtvos = new ArrayList<>();
+        for (var cbt : cbts) {
+            CBTVO cbtvo = new CBTVO();
+            BeanUtils.copyProperties(cbt, cbtvo);
+            cbtvo.setFinished(doneIds.contains(cbt.getId()));
+            List<String> list = Arrays.stream(cbt.getTags().split(",")).toList();
+            cbtvo.setTags(list);
+            cbtvos.add(cbtvo);
         }
-        return cbt;
+        return cbtvos;
     }
 
     @Override
@@ -62,7 +66,12 @@ public class CBTServiceImpl implements CBTService {
                 placeholders.setSupport(detail.getSupport());
                 placeholders.setAgainst(detail.getAgainst());
                 cbtDetailVO.setPlaceholders(placeholders);
+            } else if ("single-select".equals(detail.getType())
+                    || "multiple-select".equals(detail.getType())) {
+                List<String> strings = JSON.parseArray(detail.getOptions(), String.class);
+                cbtDetailVO.setOptions(strings);
             }
+            cbtDetailVO.setId(detail.getId().toString());
             cBTDetailVOs.add(cbtDetailVO);
         }
         return cBTDetailVOs;
@@ -84,13 +93,14 @@ public class CBTServiceImpl implements CBTService {
                 .user(BaseContext.getCurrentId())
                 .query(JSON.toJSONString(qaPairs))
                 .responseMode(ResponseMode.STREAMING)
+                .inputs(Map.of())
                 .build();
 
         cbtAnalyzerClient.sendChatMessageStream(message, new ChatStreamCallback() {
             @SneakyThrows
             @Override
             public void onMessage(MessageEvent event) {
-                var messageVO=new MessageVO();
+                var messageVO = new MessageVO();
                 BeanUtils.copyProperties(event, messageVO);
                 emitter.send(messageVO);
             }
@@ -98,7 +108,7 @@ public class CBTServiceImpl implements CBTService {
             @SneakyThrows
             @Override
             public void onMessageEnd(MessageEndEvent event) {
-                var messageEndVO=new MessageEndVO();
+                var messageEndVO = new MessageEndVO();
                 BeanUtils.copyProperties(event, messageEndVO);
                 emitter.send(messageEndVO);
                 emitter.complete();
@@ -107,7 +117,7 @@ public class CBTServiceImpl implements CBTService {
             @SneakyThrows
             @Override
             public void onError(ErrorEvent event) {
-                var errorVO=new ErrorVO();
+                var errorVO = new ErrorVO();
                 BeanUtils.copyProperties(event, errorVO);
                 emitter.send(errorVO);
                 emitter.complete();
@@ -116,12 +126,12 @@ public class CBTServiceImpl implements CBTService {
             @SneakyThrows
             @Override
             public void onPing(PingEvent event) {
-                var pingVO=new PingVO();
+                var pingVO = new PingVO();
                 BeanUtils.copyProperties(event, pingVO);
                 emitter.send(pingVO);
             }
         });
-        return null;
+        return emitter;
     }
 
 

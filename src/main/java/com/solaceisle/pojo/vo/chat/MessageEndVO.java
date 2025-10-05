@@ -7,5 +7,9 @@ public class MessageEndVO {
 
     private String taskId;
 
+    private String messageId;
+
+    private String conversationId;
+
     private String event;
 }

@@ -7,6 +7,8 @@ public class NodeStartedVO {
 
     private String taskId;
 
+    private String messageId;
+
     private String event;
 
     private Data data;

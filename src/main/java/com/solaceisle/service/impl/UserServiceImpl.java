@@ -65,7 +65,8 @@ public class UserServiceImpl implements UserService {
             throw new UnCorrectPasswordException(AuthConstant.ERROR_PASSWORD);
         }
         userMapper.updatePassword(studentId,updatePasswordDTO.getNewPassword());
-        redisTemplate.opsForHash().put(studentId,"sessionId",null);
+//        redisTemplate.opsForHash().put(studentId,"sessionId",null);
+        redisTemplate.opsForHash().delete(studentId,"sessionId");
         log.info("用户{}修改密码，清除sessionId",studentId);
     }
 

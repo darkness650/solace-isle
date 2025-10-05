@@ -1,6 +1,9 @@
 package com.solaceisle.pojo.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class SafeSpacePageVO {
@@ -14,7 +17,8 @@ public class SafeSpacePageVO {
 
     private Integer like;
 
-    private String createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime datetime;
 
-    private boolean isliked;
+    private boolean liked;
 }

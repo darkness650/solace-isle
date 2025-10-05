@@ -1,7 +1,7 @@
 package com.solaceisle.controller;
 
 import com.solaceisle.pojo.dto.CommentDTO;
-import com.solaceisle.pojo.dto.PageQuertDTO;
+import com.solaceisle.pojo.dto.PageQueryDTO;
 import com.solaceisle.result.PageResult;
 import com.solaceisle.result.Result;
 import com.solaceisle.service.SafeSpaceService;
@@ -15,8 +15,8 @@ public class SafeSpaceController {
 
     private final SafeSpaceService safeSpaceService;
     @GetMapping
-    public Result<PageResult> getSafeSpaces(@RequestParam int order, @RequestParam int page,@RequestParam int pageSize) {
-        PageResult pageVOList= safeSpaceService.getSafeSpaces(new PageQuertDTO(order,page,pageSize));
+    public Result<PageResult> getSafeSpaces(PageQueryDTO pageQueryDTO) {
+        PageResult pageVOList= safeSpaceService.getSafeSpaces(pageQueryDTO);
         return Result.success(pageVOList);
     }
     @PutMapping("like")

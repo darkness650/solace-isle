@@ -23,8 +23,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
-@Component
-@Aspect
+// TODO
+//@Component
+//@Aspect
 @Slf4j
 public class AutoFillAspact {
 

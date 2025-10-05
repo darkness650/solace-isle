@@ -1,6 +1,7 @@
 package com.solaceisle.controller;
 
 import com.solaceisle.pojo.dto.DiaryDTO;
+import com.solaceisle.pojo.dto.GetTagsDTO;
 import com.solaceisle.pojo.vo.DiaryVO;
 import com.solaceisle.result.Result;
 import com.solaceisle.service.DiaryService;
@@ -31,8 +32,8 @@ public class DiaryController {
     }
 
     @PostMapping("/tags")
-    public Result<List<String>> getTags(String text) throws DifyApiException, IOException {
-        List<String> tags = diaryService.getTags(text);
+    public Result<List<String>> getTags(@RequestBody GetTagsDTO getTagsDTO) throws DifyApiException, IOException {
+        List<String> tags = diaryService.getTags(getTagsDTO.getContent());
         return Result.success(tags);
     }
 }

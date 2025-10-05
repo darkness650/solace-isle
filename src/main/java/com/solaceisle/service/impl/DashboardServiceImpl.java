@@ -53,7 +53,11 @@ public class DashboardServiceImpl implements DashboardService {
 
         List<Diary> diaries = diaryMapper.getRecentTrack(currentUserIdOrThrow(), days);
         TrackVO trackVO = new TrackVO();
-        trackVO.setConsecutiveDays(diaries.get(0).getConsecutiveDays());
+        if(diaries==null||diaries.isEmpty()){
+            trackVO.setConsecutiveDays(0);
+        }
+        else
+            trackVO.setConsecutiveDays(diaries.get(0).getConsecutiveDays());
         List<Track> tracks = new ArrayList<>();
         LocalDate lastDiary = LocalDate.now();
         for (Diary diary : diaries) {
@@ -74,7 +78,7 @@ public class DashboardServiceImpl implements DashboardService {
                 tracks.add(new Track());
             }
         }
-        trackVO.setTracks(tracks);
+        trackVO.setMoodTrend(tracks);
         return trackVO;
     }
 
@@ -87,8 +91,10 @@ public class DashboardServiceImpl implements DashboardService {
             if(key.equals("sessionId")){
                 continue;
             }
-            reminds.add(key);
+            reminds.add(map.get(key));
         }
+        redisTemplate.opsForHash().delete(studentId);
+        redisTemplate.opsForHash().put(studentId,"sessionId",map.get("sessionId"));
         return reminds;
     }
 
@@ -105,6 +111,7 @@ public class DashboardServiceImpl implements DashboardService {
                 achievementsVO.setAchievedAt(achieve_Achievements.get(achievement.getId()));
             }
             else achievementsVO.setAchievedAt(null);
+            achievementsVOS.add(achievementsVO);
         }
         return achievementsVOS;
     }

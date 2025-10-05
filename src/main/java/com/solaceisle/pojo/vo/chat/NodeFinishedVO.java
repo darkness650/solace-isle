@@ -7,5 +7,7 @@ public class NodeFinishedVO{
 
     private String taskId;
 
+    private String messageId;
+
     private String event;
 }

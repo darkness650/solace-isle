@@ -7,6 +7,7 @@ import com.solaceisle.result.Result;
 import com.solaceisle.service.CBTService;
 import io.github.imfangs.dify.client.exception.DifyApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -30,8 +31,8 @@ public class CBTController {
         return Result.success(cbtService.getCBTDetail(id));
     }
 
-    @PostMapping("/{id}")
-    public SseEmitter postCBT(@RequestBody List<CBTDTO> answer, @PathVariable Integer id)
+    @PostMapping(path = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter postCBT(@PathVariable Integer id, @RequestBody List<CBTDTO> answer)
             throws DifyApiException, IOException {
         return cbtService.postCBT(answer, id);
     }

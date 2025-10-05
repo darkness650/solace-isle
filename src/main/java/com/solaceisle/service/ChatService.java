@@ -5,6 +5,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public interface ChatService {
 
@@ -14,5 +15,5 @@ public interface ChatService {
 
     void stopChat(String taskId) throws DifyApiException, IOException;
 
-    List<String> getIntroSuggestions() throws DifyApiException, IOException;
+    List<String> getIntroSuggestions() throws DifyApiException, IOException, ExecutionException, InterruptedException;
 }

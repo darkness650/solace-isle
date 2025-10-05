@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/chat")
@@ -19,9 +20,9 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @PostMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter chat(@RequestBody ChatDTO chatDTO, @PathVariable String id) throws DifyApiException, IOException {
-        return chatService.chat(id, chatDTO.getQuery());
+    @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter chat(@RequestBody ChatDTO chatDTO) throws DifyApiException, IOException {
+        return chatService.chat(chatDTO.getId(), chatDTO.getQuery());
     }
 
     @GetMapping("/title/{id}")
@@ -37,7 +38,8 @@ public class ChatController {
     }
 
     @GetMapping
-    public Result<List<String>> getIntroSuggestions() throws DifyApiException, IOException {
+    public Result<List<String>> getIntroSuggestions()
+            throws DifyApiException, IOException, ExecutionException, InterruptedException {
         List<String> suggestions = chatService.getIntroSuggestions();
         return Result.success(suggestions);
     }

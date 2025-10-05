@@ -6,4 +6,6 @@ import lombok.Data;
 public class ChatDTO {
 
     private String query;
+
+    private String id;
 }

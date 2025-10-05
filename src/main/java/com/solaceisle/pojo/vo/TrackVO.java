@@ -10,5 +10,5 @@ import java.util.List;
 @Data
 public class TrackVO {
     private int consecutiveDays;
-    private List<Track> tracks;
+    private List<Track> moodTrend;
 }

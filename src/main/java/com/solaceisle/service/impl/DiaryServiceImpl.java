@@ -86,17 +86,23 @@ public class DiaryServiceImpl implements DiaryService {
         inputs.put("text", diary.getText());
         inputs.put("tags", diary.getTags());
 
-        var fileInfo = FileInfo.builder()
-                .type(FileType.IMAGE)
-                .transferMethod(FileTransferMethod.REMOTE_URL)
-                .url(diary.getImage())
-                .build();
+        List<FileInfo> fileInfos=null;
+        String imageUrl=diary.getImage();
+        if(imageUrl!=null){
+            var fileInfo = FileInfo.builder()
+                    .type(FileType.IMAGE)
+                    .transferMethod(FileTransferMethod.REMOTE_URL)
+                    .url(imageUrl)
+                    .build();
+            fileInfos=new ArrayList<>();
+            fileInfos.add(fileInfo);
+        }
 
         var request = CompletionRequest.builder()
                 .user(BaseContext.getCurrentId())
                 .inputs(inputs)
                 .responseMode(ResponseMode.BLOCKING)
-                .files(List.of(fileInfo))
+                .files(fileInfos)
                 .build();
 
         var response = diaryEmotionRankClient.sendCompletionMessage(request);
@@ -113,6 +119,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .query(text)
                 .responseMode(ResponseMode.BLOCKING)
                 .user(BaseContext.getCurrentId())
+                .inputs(Map.of())
                 .build();
         String answer = tagGeneratorClient.sendChatMessage(message).getAnswer();
         return JSON.parseArray(answer, String.class);

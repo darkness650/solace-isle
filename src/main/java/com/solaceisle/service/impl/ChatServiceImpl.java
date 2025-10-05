@@ -4,11 +4,14 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.solaceisle.constant.MessageConstant;
 import com.solaceisle.context.BaseContext;
+import com.solaceisle.exception.SuggestionGeneratorException;
 import com.solaceisle.mapper.UserMapper;
 import com.solaceisle.pojo.entity.User;
 import com.solaceisle.pojo.vo.chat.*;
 import com.solaceisle.service.ChatService;
+import io.github.imfangs.dify.client.DifyChatClient;
 import io.github.imfangs.dify.client.DifyChatflowClient;
+import io.github.imfangs.dify.client.callback.ChatStreamCallback;
 import io.github.imfangs.dify.client.callback.ChatflowStreamCallback;
 import io.github.imfangs.dify.client.enums.ResponseMode;
 import io.github.imfangs.dify.client.event.*;
@@ -25,6 +28,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Slf4j
 @Service
@@ -33,6 +39,7 @@ public class ChatServiceImpl implements ChatService {
 
     private final DifyChatflowClient chatPartnerClient;
     private final UserMapper userMapper;
+    private final DifyChatClient suggestionGeneratorClient;
 
     @Override
     public SseEmitter chat(String id, String query) throws DifyApiException, IOException {
@@ -43,9 +50,13 @@ public class ChatServiceImpl implements ChatService {
 
         // 构造需要发送的消息
         ChatMessage chatMessage = ChatMessage.builder()
-                .query(query).user(id).inputs(Map.of("email", email)).build();
+                .query(query)
+                .user(BaseContext.getCurrentId())
+                .inputs(Map.of("email", email))
+                .conversationId(id)
+                .build();
 
-        SseEmitter emitter = new SseEmitter();
+        SseEmitter emitter = new SseEmitter(2*60*1000L);
 
         chatPartnerClient.sendChatMessageStream(chatMessage, new ChatflowStreamCallback() {
             @SneakyThrows
@@ -53,6 +64,7 @@ public class ChatServiceImpl implements ChatService {
             public void onWorkflowStarted(WorkflowStartedEvent event) {
                 var workflowStartedVO = new WorkflowStartedVO();
                 BeanUtils.copyProperties(event, workflowStartedVO);
+                workflowStartedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(workflowStartedVO);
             }
 
@@ -65,6 +77,7 @@ public class ChatServiceImpl implements ChatService {
                 var data = new NodeStartedVO.Data();
                 BeanUtils.copyProperties(event.getData(), data);
                 nodeStartedVO.setData(data);
+                nodeStartedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(nodeStartedVO);
             }
 
@@ -73,6 +86,7 @@ public class ChatServiceImpl implements ChatService {
             public void onNodeFinished(NodeFinishedEvent event) {
                 var nodeFinishedVO = new NodeFinishedVO();
                 BeanUtils.copyProperties(event, nodeFinishedVO);
+                nodeFinishedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(nodeFinishedVO);
             }
 
@@ -81,6 +95,7 @@ public class ChatServiceImpl implements ChatService {
             public void onWorkflowFinished(WorkflowFinishedEvent event) {
                 var workflowFinishedVO = new WorkflowFinishedVO();
                 BeanUtils.copyProperties(event, workflowFinishedVO);
+                workflowFinishedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(workflowFinishedVO);
             }
 
@@ -136,15 +151,46 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<String> getIntroSuggestions() throws DifyApiException, IOException {
+    public List<String> getIntroSuggestions() throws DifyApiException, IOException, ExecutionException, InterruptedException {
         var message = ChatMessage.builder()
                 .user(BaseContext.getCurrentId())
-                .responseMode(ResponseMode.BLOCKING)
+                .responseMode(ResponseMode.STREAMING)
                 .query(MessageConstant.INTRO_SUGGESTION_QUERY)
+                .inputs(Map.of())
                 .build();
 
-        var response = chatPartnerClient.sendChatMessage(message);
-        String answer = response.getAnswer();
-        return JSON.parseArray(answer, String.class);
+        var future = new CompletableFuture<String>();
+
+        var callback = new SuggestionChatStreamCallback(future);
+
+        suggestionGeneratorClient.sendChatMessageStream(message, callback);
+
+        return JSON.parseArray(future.get(), String.class);
+    }
+
+    static class SuggestionChatStreamCallback implements ChatStreamCallback {
+        private final CompletableFuture<String> suggestionFuture;
+        private final StringBuilder sb = new StringBuilder();
+
+        public SuggestionChatStreamCallback(CompletableFuture<String> suggestionFuture) {
+            this.suggestionFuture = suggestionFuture;
+        }
+
+        @Override
+        public void onAgentMessage(AgentMessageEvent event) {
+            sb.append(event.getAnswer());
+        }
+
+        @Override
+        public void onMessageEnd(MessageEndEvent event) {
+            suggestionFuture.complete(sb.toString());
+        }
+
+        @Override
+        public void onError(ErrorEvent event) {
+            throw new SuggestionGeneratorException(event.toString());
+        }
     }
 }
+
+

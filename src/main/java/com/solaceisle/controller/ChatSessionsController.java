@@ -19,11 +19,6 @@ public class ChatSessionsController {
 
     private final ChatSessionsService chatSessionsService;
 
-    @GetMapping
-    public Result<String> createSession() {
-        return Result.success(UUID.randomUUID().toString());
-    }
-
     @PostMapping("/{id}")
     public Result<?> renameSession(
             @PathVariable String id,

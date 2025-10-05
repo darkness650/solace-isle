@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,6 +41,7 @@ public class ChatSessionsServiceImpl implements ChatSessionsService {
         MessageListResponse messageListResponse = chatPartnerClient.getMessages(id, BaseContext.getCurrentId(), firstId, limit);
         var chatSessionMessagesVO = new ChatSessionMessagesVO();
         BeanUtils.copyProperties(messageListResponse, chatSessionMessagesVO);
+        chatSessionMessagesVO.setMessages(new ArrayList<>());
 
         // 将List手动进行转换
         List<MessageListResponse.Message> data = messageListResponse.getData();
@@ -58,6 +60,7 @@ public class ChatSessionsServiceImpl implements ChatSessionsService {
     public ChatSessionsVO getSessions(String lastId, Integer limit) throws DifyApiException, IOException {
         var conversationListResponse = chatPartnerClient.getConversations(BaseContext.getCurrentId(), lastId, limit, null);
         var chatSessionsVO = new ChatSessionsVO();
+        chatSessionsVO.setSessions(new ArrayList<>());
         BeanUtils.copyProperties(conversationListResponse, chatSessionsVO);
 
         // 将List手动进行转换

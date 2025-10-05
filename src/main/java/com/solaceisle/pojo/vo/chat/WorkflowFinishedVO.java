@@ -7,5 +7,7 @@ public class WorkflowFinishedVO {
 
     private String taskId;
 
+    private String messageId;
+
     private String event;
 }
