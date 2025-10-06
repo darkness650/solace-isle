@@ -1,5 +1,6 @@
 package com.solaceisle.aspact;
 
+import com.alibaba.fastjson2.JSON;
 import com.solaceisle.annotation.AutoFill;
 import com.solaceisle.constant.AchievementConstants;
 import com.solaceisle.constant.RemindConstant;
@@ -8,8 +9,10 @@ import com.solaceisle.mapper.AchievementMapper;
 import com.solaceisle.mapper.CBTMapper;
 import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.mapper.SafeSpaceMapper;
+import com.solaceisle.pojo.entity.Achievement;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.enumeration.OperatorType;
+import com.solaceisle.pojo.vo.AchievementVO;
 import com.solaceisle.pojo.vo.WebsocketVO;
 import com.solaceisle.socketserver.WebSocketServer;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -142,7 +145,11 @@ public class AutoFillAspact {
     }
     @After("sendMessage()")
     public void sendMessageAfter(JoinPoint joinPoint){
-        // TODO 发送WebSocketVO.achievement()成就
-        webSocketServer.sendToClient(BaseContext.getCurrentId(), RemindConstant.CONGRATULATIONS);
+        Object[] args = joinPoint.getArgs();
+        String achievementId=(String) args[1];
+        Achievement achievement = achievementMapper.getAchievement(achievementId);
+        AchievementVO achievementVO=new AchievementVO(achievement.getTitle(),achievement.getDescription(),achievement.getIcon(), LocalDateTime.now());
+        String achieveRemind= JSON.toJSONString(achievementVO);
+        webSocketServer.sendToClient(BaseContext.getCurrentId(),achieveRemind);
     }
 }

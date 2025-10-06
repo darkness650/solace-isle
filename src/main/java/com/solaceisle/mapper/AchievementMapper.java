@@ -1,5 +1,6 @@
 package com.solaceisle.mapper;
 
+import com.solaceisle.annotation.Achieve;
 import com.solaceisle.pojo.entity.Achievement;
 import com.solaceisle.pojo.entity.UserAchievement;
 import org.apache.ibatis.annotations.*;
@@ -17,6 +18,7 @@ public interface AchievementMapper {
     @Select("select achievement_id, finish_time from user_achievement where student_id=#{studentId}")
     Map<String, UserAchievement> getAchievementsIds(String studentId);
 
+    @Achieve
     @Insert("insert into user_achievement(student_id, achievement_id, finish_time) values (#{studentId},#{achievementId},#{achieveTime})")
     void achieve(String studentId, String achievementId, LocalDateTime achieveTime);
 
@@ -28,4 +30,7 @@ public interface AchievementMapper {
 
     @Update("update user_achievement set progress = #{consecutiveDays} where achievement_id='STREAK_3' and student_id=#{studentId}")
     void updateConsecutiveDays(String studentId, int consecutiveDays);
+
+    @Select("select * from achievement where id=#{achievementId}")
+    Achievement getAchievement(String achievementId);
 }

@@ -11,7 +11,7 @@
         FROM diary
         WHERE student_id = #{studentId}
         AND create_time between #{start} and #{end}
-        ORDER BY create_time ASC
+        ORDER BY create_time desc
     </select>
     <select id="findByStudentIdAndCreateTime" resultType="com.solaceisle.pojo.entity.Diary">
         select * from diary where student_id=#{currentId} and create_time=#{createTime}

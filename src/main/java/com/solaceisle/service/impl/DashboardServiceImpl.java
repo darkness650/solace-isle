@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
 
 @Slf4j
@@ -70,20 +71,18 @@ public class DashboardServiceImpl implements DashboardService {
             for (int i = 0; i < daysBetween - 1; i++) {
                 tracks.add(new Track());
             }
-            // TODO SUNDAY MONDAY ，改为中文 周日 周一 ...
-            track.setDay(String.valueOf(diary.getCreateTime().getDayOfWeek()));
+            track.setDay(diary.getCreateTime().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.CHINA));
             track.setLabel(diary.getEmoji());
             track.setScore(diary.getScore());
             tracks.add(track);
         }
-        // TODO 补齐前面的空白天数，而不是后面的
         if (tracks.size() < days) {
             int remainingDays = days - tracks.size();
             for (int i = 0; i < remainingDays; i++) {
                 tracks.add(new Track());
             }
         }
-        trackVO.setMoodTrend(tracks);
+        trackVO.setMoodTrend(tracks.reversed());
         return trackVO;
     }
 
