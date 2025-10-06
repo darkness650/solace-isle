@@ -7,14 +7,12 @@ import com.solaceisle.service.ChatSessionsService;
 import io.github.imfangs.dify.client.DifyChatflowClient;
 import io.github.imfangs.dify.client.exception.DifyApiException;
 import io.github.imfangs.dify.client.model.chat.Conversation;
-import io.github.imfangs.dify.client.model.chat.ConversationListResponse;
 import io.github.imfangs.dify.client.model.chat.MessageListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;

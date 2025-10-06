@@ -1,6 +1,6 @@
 package com.solaceisle.service;
 
-import com.solaceisle.pojo.vo.AchievementsVO;
+import com.solaceisle.pojo.vo.AchievementVO;
 import com.solaceisle.pojo.vo.MoodVO;
 import com.solaceisle.pojo.vo.TrackVO;
 
@@ -14,6 +14,6 @@ public interface DashboardService {
 
     List<String> getRemind();
 
-    List<AchievementsVO> getAchievements();
+    List<AchievementVO> getAchievements();
 }
 

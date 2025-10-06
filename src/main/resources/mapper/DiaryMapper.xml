@@ -23,7 +23,7 @@
         select * from diary where student_id=#{studentId} order by create_time desc limit 1
     </select>
     <select id="getRecentTrack" resultType="com.solaceisle.pojo.entity.Diary">
-        select * from diary where student_id=#{studentId} order by create_time desc limit #{days}
+        select * from diary where student_id=#{studentId} order by create_time limit #{days}
     </select>
 </mapper>
 

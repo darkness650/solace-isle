@@ -1,6 +1,6 @@
 package com.solaceisle.controller;
 
-import com.solaceisle.pojo.vo.AchievementsVO;
+import com.solaceisle.pojo.vo.AchievementVO;
 import com.solaceisle.pojo.vo.MoodVO;
 import com.solaceisle.pojo.vo.TrackVO;
 import com.solaceisle.result.Result;
@@ -35,7 +35,7 @@ public class DashboardController {
         return Result.success(dashboardService.getRemind());
     }
     @GetMapping("/achievements")
-    public Result<List<AchievementsVO>> getAchievements() {
+    public Result<List<AchievementVO>> getAchievements() {
         return Result.success(dashboardService.getAchievements());
     }
 }

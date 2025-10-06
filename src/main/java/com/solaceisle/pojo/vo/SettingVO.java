@@ -1,17 +1,16 @@
 package com.solaceisle.pojo.vo;
 
 import jakarta.persistence.Column;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class SettingVO {
 
-    @Column(name = "share_statistics")
-    private boolean shareStatistics;
+    private boolean shareAggregated;
 
-    @Column(name = "record_remind")
-    private boolean recordRemind;
+    private boolean nightlyReminder;
 
-    @Column(name = "exercise_notice")
-    private boolean exerciseNotice;
+    private boolean breathingNotification;
 }
