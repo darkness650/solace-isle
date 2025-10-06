@@ -55,8 +55,14 @@ public class DiaryServiceImpl implements DiaryService {
 
         List<DiaryVO> diaryVOs = new ArrayList<>(diaries.size());
         for (Diary diary : diaries) {
-            DiaryVO diaryVO = new DiaryVO();
-            BeanUtils.copyProperties(diary, diaryVO);
+            DiaryVO diaryVO = DiaryVO.builder()
+                    .moodEmoji(diary.getEmoji())
+                    .moodLabel(diary.getEmotion())
+                    .date(diary.getCreateTime())
+                    .content(diary.getText())
+                    .image(diary.getImage())
+                    .build();
+            diaryVO.setTags(JSON.parseArray(diary.getTags(), String.class));
             diaryVOs.add(diaryVO);
         }
 
@@ -64,7 +70,6 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-//    @Transactional
     public void addDiary(DiaryDTO diaryDTO) throws DifyApiException, IOException {
         Diary yesterdaysDiary = diaryMapper.findByStudentIdAndCreateTime(BaseContext.getCurrentId(), LocalDate.now().minusDays(1));
         Diary diary = Diary
@@ -74,7 +79,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .text(diaryDTO.getContent())
                 .image(diaryDTO.getImage())
                 .createTime(LocalDate.now())
-                .tags(diaryDTO.getTags().toString())
+                .tags(JSON.toJSONString(diaryDTO.getTags()))
                 .studentId(BaseContext.getCurrentId())
                 .build();
         if (yesterdaysDiary == null) {
@@ -90,15 +95,15 @@ public class DiaryServiceImpl implements DiaryService {
         inputs.put("text", diary.getText());
         inputs.put("tags", diary.getTags());
 
-        List<FileInfo> fileInfos=null;
-        String imageUrl=diary.getImage();
-        if(imageUrl!=null){
+        List<FileInfo> fileInfos = null;
+        String imageUrl = diary.getImage();
+        if (imageUrl != null&&!imageUrl.isBlank()) {
             var fileInfo = FileInfo.builder()
                     .type(FileType.IMAGE)
                     .transferMethod(FileTransferMethod.REMOTE_URL)
                     .url(imageUrl)
                     .build();
-            fileInfos=new ArrayList<>();
+            fileInfos = new ArrayList<>();
             fileInfos.add(fileInfo);
         }
 

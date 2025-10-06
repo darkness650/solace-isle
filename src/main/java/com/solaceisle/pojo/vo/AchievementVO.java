@@ -1,12 +1,11 @@
 package com.solaceisle.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 @Data
-public class AchievementsVO {
+public class AchievementVO {
 
     private String name;
 

@@ -10,6 +10,7 @@ import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.mapper.SafeSpaceMapper;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.enumeration.OperatorType;
+import com.solaceisle.pojo.vo.WebsocketVO;
 import com.solaceisle.socketserver.WebSocketServer;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
@@ -141,6 +142,7 @@ public class AutoFillAspact {
     }
     @After("sendMessage()")
     public void sendMessageAfter(JoinPoint joinPoint){
+        // TODO 发送WebSocketVO.achievement()成就
         webSocketServer.sendToClient(BaseContext.getCurrentId(), RemindConstant.CONGRATULATIONS);
     }
 }

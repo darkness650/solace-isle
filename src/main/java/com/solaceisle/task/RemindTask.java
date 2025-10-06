@@ -1,7 +1,10 @@
 package com.solaceisle.task;
 
+import com.alibaba.fastjson2.JSON;
 import com.solaceisle.constant.RemindConstant;
+import com.solaceisle.context.BaseContext;
 import com.solaceisle.mapper.UserMapper;
+import com.solaceisle.pojo.vo.WebsocketVO;
 import com.solaceisle.socketserver.WebSocketServer;
 
 import jakarta.websocket.Session;
@@ -14,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -39,7 +41,7 @@ public class RemindTask {
         log.info("[RemindTask] 发送 0 点通用提醒");
         List<String> userIds = userMapper.listAllUserId();
         for (Map.Entry<String, String> e : RemindConstant.FIRST_THREE_REMINDERS.entrySet()) {
-            send(e.getValue(), e.getKey());
+            sendReminder(e.getValue(), e.getKey());
         }
         ConcurrentMap<String, Session> sessionMap = webSocketServer.getSessionMap();
         for(String id:userIds){
@@ -58,8 +60,8 @@ public class RemindTask {
     @Scheduled(cron = "0 0 7 * * ?", zone = "Asia/Shanghai")
     public void sendMorningReminders() {
         log.info("[RemindTask] 发送 07:00 早安/早餐提醒");
-        send(RemindConstant.MORNING_GREETING_VALUE, RemindConstant.MORNING_GREETING_KEY);
-        send(RemindConstant.BREAKFAST_REMIND_VALUE, RemindConstant.BREAKFAST_REMIND_KEY);
+        sendReminder(RemindConstant.MORNING_GREETING_VALUE, RemindConstant.MORNING_GREETING_KEY);
+        sendReminder(RemindConstant.BREAKFAST_REMIND_VALUE, RemindConstant.BREAKFAST_REMIND_KEY);
         cacheGreeting(RemindConstant.MORNING_GREETING_VALUE);
     }
     private void cacheGreeting(String value){
@@ -78,8 +80,8 @@ public class RemindTask {
     @Scheduled(cron = "0 0 11 * * ?", zone = "Asia/Shanghai")
     public void sendNoonReminders() {
         log.info("[RemindTask] 发送 11:00 午安/午餐提醒");
-        send(RemindConstant.NOON_GREETING_VALUE, RemindConstant.NOON_GREETING_KEY);
-        send(RemindConstant.LUNCH_REMIND_VALUE, RemindConstant.LUNCH_REMIND_KEY);
+        sendReminder(RemindConstant.NOON_GREETING_VALUE, RemindConstant.NOON_GREETING_KEY);
+        sendReminder(RemindConstant.LUNCH_REMIND_VALUE, RemindConstant.LUNCH_REMIND_KEY);
         cacheGreeting(RemindConstant.NOON_GREETING_VALUE);
     }
 
@@ -89,8 +91,8 @@ public class RemindTask {
     @Scheduled(cron = "0 0 17 * * ?", zone = "Asia/Shanghai")
     public void sendEveningReminders() {
         log.info("[RemindTask] 发送 17:00 晚间/晚餐提醒");
-        send(RemindConstant.EVENING_GREETING_VALUE, RemindConstant.EVENING_GREETING_KEY);
-        send(RemindConstant.DINNER_REMIND_VALUE, RemindConstant.DINNER_REMIND_KEY);
+        sendReminder(RemindConstant.EVENING_GREETING_VALUE, RemindConstant.EVENING_GREETING_KEY);
+        sendReminder(RemindConstant.DINNER_REMIND_VALUE, RemindConstant.DINNER_REMIND_KEY);
         cacheGreeting(RemindConstant.EVENING_GREETING_VALUE);
     }
 
@@ -100,16 +102,18 @@ public class RemindTask {
     @Scheduled(cron = "0 0 21 * * ?", zone = "Asia/Shanghai")
     public void sendLateNightReminder() {
         log.info("[RemindTask] 发送 21:00 深夜提醒");
-        send(RemindConstant.LATE_NIGHT_VALUE, RemindConstant.LATE_NIGHT_KEY);
+        sendReminder(RemindConstant.LATE_NIGHT_VALUE, RemindConstant.LATE_NIGHT_KEY);
         cacheGreeting(RemindConstant.LATE_NIGHT_VALUE);
     }
 
     /**
-     * 实际发送逻辑：带上描述方便前端区分。
-     * 这里简单拼接成: [描述] 提示内容
+     * 发送提醒消息
+     * @param value
+     * @param key
      */
-    private void send(String value, String key) {
-        String payload =  value;
+    private void sendReminder(String value, String key) {
+        WebsocketVO remind = WebsocketVO.remind(value);
+        String payload = JSON.toJSONString(remind);
         try {
             webSocketServer.sendToAllClient(payload);
         } catch (Exception ex) {

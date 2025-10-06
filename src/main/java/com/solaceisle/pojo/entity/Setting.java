@@ -1,6 +1,7 @@
 package com.solaceisle.pojo.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,13 +16,13 @@ public class Setting {
     private String studentId;
 
     @Column(name = "share_statistics")
-    private String shareStatistics;
+    private Boolean shareStatistics;
 
     @Column(name = "record_remind")
-    private String recordRemind;
+    private Boolean recordRemind;
 
     @Column(name = "exercise_notice")
-    private String exerciseNotice;
+    private Boolean exerciseNotice;
 
 
 }

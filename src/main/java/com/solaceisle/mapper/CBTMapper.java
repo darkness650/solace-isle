@@ -16,7 +16,7 @@ public interface CBTMapper {
 
     @Select("select * from cbt_exercise")
     List<CbtExercise> getCBT();
-    @AutoFill(value = OperatorType.CBT)
+
     @Select("select cbt_exercise_id from user_cbt_exercise where student_id = #{studentId}")
     Set<Long> getDoneCBTIds(String studentId);
 

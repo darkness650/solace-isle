@@ -22,10 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -41,6 +43,9 @@ public class ChatServiceImpl implements ChatService {
     private final UserMapper userMapper;
     private final DifyChatClient suggestionGeneratorClient;
 
+    @Value("${solace.hotline}")
+    private String hotline;
+
     @Override
     public SseEmitter chat(String id, String query) throws DifyApiException, IOException {
         // 获取用户的邮箱地址
@@ -49,14 +54,19 @@ public class ChatServiceImpl implements ChatService {
         String email = user.getEmail();
 
         // 构造需要发送的消息
+        Map<String, Object> inputs = new HashMap<>();
+        inputs.put("email", email);
+        inputs.put("id", studentId);
+        inputs.put("hotline", hotline);
+
         ChatMessage chatMessage = ChatMessage.builder()
                 .query(query)
                 .user(BaseContext.getCurrentId())
-                .inputs(Map.of("email", email))
+                .inputs(inputs)
                 .conversationId(id)
                 .build();
 
-        SseEmitter emitter = new SseEmitter(2*60*1000L);
+        SseEmitter emitter = new SseEmitter(2 * 60 * 1000L);
 
         chatPartnerClient.sendChatMessageStream(chatMessage, new ChatflowStreamCallback() {
             @SneakyThrows
@@ -64,8 +74,8 @@ public class ChatServiceImpl implements ChatService {
             public void onWorkflowStarted(WorkflowStartedEvent event) {
                 var workflowStartedVO = new WorkflowStartedVO();
                 BeanUtils.copyProperties(event, workflowStartedVO);
-                workflowStartedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(workflowStartedVO);
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -77,8 +87,8 @@ public class ChatServiceImpl implements ChatService {
                 var data = new NodeStartedVO.Data();
                 BeanUtils.copyProperties(event.getData(), data);
                 nodeStartedVO.setData(data);
-                nodeStartedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(nodeStartedVO);
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -86,8 +96,8 @@ public class ChatServiceImpl implements ChatService {
             public void onNodeFinished(NodeFinishedEvent event) {
                 var nodeFinishedVO = new NodeFinishedVO();
                 BeanUtils.copyProperties(event, nodeFinishedVO);
-                nodeFinishedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(nodeFinishedVO);
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -95,8 +105,8 @@ public class ChatServiceImpl implements ChatService {
             public void onWorkflowFinished(WorkflowFinishedEvent event) {
                 var workflowFinishedVO = new WorkflowFinishedVO();
                 BeanUtils.copyProperties(event, workflowFinishedVO);
-                workflowFinishedVO.setMessageId(event.getWorkflowRunId());
                 emitter.send(workflowFinishedVO);
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -105,6 +115,7 @@ public class ChatServiceImpl implements ChatService {
                 var messageVO = new MessageVO();
                 BeanUtils.copyProperties(event, messageVO);
                 emitter.send(messageVO);
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -115,6 +126,7 @@ public class ChatServiceImpl implements ChatService {
                 emitter.send(messageEndVO);
                 log.info("发送消息正常完成");
                 emitter.complete();
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -125,6 +137,7 @@ public class ChatServiceImpl implements ChatService {
                 emitter.send(errorVO);
                 log.info("发送消息异常完成");
                 emitter.complete();
+                log.info(event.getEvent());
             }
 
             @SneakyThrows
@@ -133,6 +146,7 @@ public class ChatServiceImpl implements ChatService {
                 var pingVO = new PingVO();
                 BeanUtils.copyProperties(event, pingVO);
                 emitter.send(pingVO);
+                log.info(event.getEvent());
             }
         });
 

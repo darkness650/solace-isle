@@ -8,7 +8,7 @@ import com.solaceisle.pojo.entity.Achievement;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.entity.Track;
 import com.solaceisle.pojo.entity.UserAchievement;
-import com.solaceisle.pojo.vo.AchievementsVO;
+import com.solaceisle.pojo.vo.AchievementVO;
 import com.solaceisle.pojo.vo.MoodVO;
 import com.solaceisle.pojo.vo.TrackVO;
 import com.solaceisle.service.DashboardService;
@@ -19,7 +19,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -54,7 +53,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public TrackVO getRecentTrack(int days) {
-
+        // Mapper已按日期升序排序
         List<Diary> diaries = diaryMapper.getRecentTrack(currentUserIdOrThrow(), days);
         TrackVO trackVO = new TrackVO();
         if(diaries==null||diaries.isEmpty()){
@@ -71,11 +70,13 @@ public class DashboardServiceImpl implements DashboardService {
             for (int i = 0; i < daysBetween - 1; i++) {
                 tracks.add(new Track());
             }
+            // TODO SUNDAY MONDAY ，改为中文 周日 周一 ...
             track.setDay(String.valueOf(diary.getCreateTime().getDayOfWeek()));
             track.setLabel(diary.getEmoji());
             track.setScore(diary.getScore());
             tracks.add(track);
         }
+        // TODO 补齐前面的空白天数，而不是后面的
         if (tracks.size() < days) {
             int remainingDays = days - tracks.size();
             for (int i = 0; i < remainingDays; i++) {
@@ -106,23 +107,23 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<AchievementsVO> getAchievements() {
+    public List<AchievementVO> getAchievements() {
         String studentId = currentUserIdOrThrow();
         List<Achievement> achievements= achievementMapper.getAchievements();
-        List<AchievementsVO> achievementsVOS = new ArrayList<>();
+        List<AchievementVO> achievementVOS = new ArrayList<>();
         Map<String, UserAchievement> achieve_Achievements = achievementMapper.getAchievementsIds(studentId);
         for(Achievement achievement:achievements){
-            AchievementsVO achievementsVO = new AchievementsVO();
-            BeanUtils.copyProperties(achievement,achievementsVO);
-            achievementsVO.setName(achievement.getTitle());
+            AchievementVO achievementVO = new AchievementVO();
+            BeanUtils.copyProperties(achievement, achievementVO);
+            achievementVO.setName(achievement.getTitle());
             if(achieve_Achievements.containsKey(achievement.getId())){
                 var finishTime = achieve_Achievements.get(achievement.getId()).getFinishTime();
-                achievementsVO.setAchievedAt(finishTime);
+                achievementVO.setAchievedAt(finishTime);
             }
-            else achievementsVO.setAchievedAt(null);
-            achievementsVOS.add(achievementsVO);
+            else achievementVO.setAchievedAt(null);
+            achievementVOS.add(achievementVO);
         }
-        return achievementsVOS;
+        return achievementVOS;
     }
 
 }

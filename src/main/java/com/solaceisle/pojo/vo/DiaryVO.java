@@ -1,6 +1,7 @@
 package com.solaceisle.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -8,16 +9,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@Builder
 public class DiaryVO {
 
-    private String emoji;
+    private String moodEmoji;
 
-    private String emotion;
+    private String moodLabel;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createTime;
+    private LocalDate date;
 
-    private String text;
+    private String content;
 
     private String image;
 

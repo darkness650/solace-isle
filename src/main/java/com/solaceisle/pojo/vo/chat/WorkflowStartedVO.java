@@ -7,7 +7,5 @@ public class WorkflowStartedVO {
 
     private String taskId;
 
-    private String messageId;
-
     private String event;
 }

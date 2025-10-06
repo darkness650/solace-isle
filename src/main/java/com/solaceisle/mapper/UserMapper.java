@@ -17,7 +17,7 @@ public interface UserMapper {
 
     Setting getHabits(String studentId);
 
-    void setHabits(SettingDTO settingDTO);
+    void setHabits(Setting setting);
 
     User getUserProfile(String studentId);
 
