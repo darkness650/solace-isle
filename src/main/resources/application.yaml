@@ -6,8 +6,6 @@ server:
       charset: UTF-8
 
 spring:
-  profiles:
-    active: dev
   main:
     allow-circular-references: true
   autoconfigure:
@@ -15,8 +13,8 @@ spring:
       - org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${solace.redis.host}
+      port: ${solace.redis.port}
   mail:
     host: ${solace.mail.host}
     port: ${solace.mail.port}
@@ -45,7 +43,7 @@ spring:
     url: jdbc:postgresql://${solace.datasource.host}:${solace.datasource.port}/${solace.datasource.database}
     username: ${solace.datasource.username}
     password: ${solace.datasource.password}
-    driver-class-name: ${solace.datasource.driver-class-name}
+    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -109,7 +107,7 @@ solace:
     # 设置jwt过期时间
     user-ttl: ${solace.jwt.user-ttl}
     # 设置前端传递过来的令牌名称
-    user-token-name: ${solace.jwt.user-token-name}
+    user-token-name: Authorization
   alioss:
     access-key-id: ${solace.alioss.access-key-id}
     access-key-secret: ${solace.alioss.access-key-secret}
