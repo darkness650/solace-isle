@@ -14,9 +14,7 @@ public interface AIService {
             @ToolParam(description = "主题") String subject,
             @ToolParam(description = "文本内容") String text);
 
-    @Tool(description = "获取某月的日记列表")
-    List<DiaryVO> getMonthDiary(
-            @ToolParam(description = "学号") String id,
-            @ToolParam(description = "某年某月，格式为yyyy-MM") String yearMonth);
+    @Tool(description = "获取本周的日记列表")
+    List<DiaryVO> getWeekDiary(@ToolParam(description = "学号") String id);
 
 }

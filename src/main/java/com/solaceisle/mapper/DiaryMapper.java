@@ -1,12 +1,9 @@
 package com.solaceisle.mapper;
 
 import com.solaceisle.annotation.AutoFill;
-import com.solaceisle.pojo.dto.DiaryDTO;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.enumeration.OperatorType;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface DiaryMapper {
 
-    List<Diary> findByStudentIdAndYearMonth(String studentId, LocalDate start,LocalDate end);
+    List<Diary> findByStudentIdAndDateRange(String studentId, LocalDate start, LocalDate end);
     @AutoFill(value = OperatorType.DIARY)
     void insert(Diary diary);
 

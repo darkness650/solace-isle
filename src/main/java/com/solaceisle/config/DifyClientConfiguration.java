@@ -1,10 +1,7 @@
 package com.solaceisle.config;
 
 import com.solaceisle.properties.DifyProperties;
-import io.github.imfangs.dify.client.DifyChatClient;
-import io.github.imfangs.dify.client.DifyChatflowClient;
-import io.github.imfangs.dify.client.DifyClientFactory;
-import io.github.imfangs.dify.client.DifyCompletionClient;
+import io.github.imfangs.dify.client.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,8 +27,8 @@ public class DifyClientConfiguration {
     }
 
     @Bean
-    public DifyChatClient suggestionGeneratorClient(DifyProperties difyProperties) {
-        return DifyClientFactory.createChatClient(
+    public DifyWorkflowClient suggestionGeneratorClient(DifyProperties difyProperties) {
+        return DifyClientFactory.createWorkflowClient(
                 difyProperties.getUrl(), difyProperties.getApiKey().getSuggestionGenerator());
     }
 

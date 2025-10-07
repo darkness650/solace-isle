@@ -19,7 +19,7 @@ public interface AchievementMapper {
     Map<String, UserAchievement> getAchievementsIds(String studentId);
 
     @Achieve
-    @Insert("insert into user_achievement(student_id, achievement_id, finish_time) values (#{studentId},#{achievementId},#{achieveTime})")
+    @Update("update user_achievement set finish_time = #{achieveTime} where student_id = #{studentId} and achievement_id = #{achievementId}")
     void achieve(String studentId, String achievementId, LocalDateTime achieveTime);
 
     @Select("select max(progress) from user_achievement where achievement_id= 'STREAK_3'and student_id=#{studentId} ")

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -82,6 +83,13 @@ public class CBTServiceImpl implements CBTService {
     @Override
     public SseEmitter postCBT(List<CBTDTO> answer, Integer id) throws DifyApiException, IOException {
         List<CbtExerciseDetail> questions = cbtMapper.getCBTDetail(id);
+        // 记录用户完成了该练习
+        String studentId = BaseContext.getCurrentId();
+        Set<Long> doneCBTIds = cbtMapper.getDoneCBTIds(studentId);
+        if(!doneCBTIds.contains(id.longValue())) {
+            cbtMapper.markDone(studentId, id, LocalDateTime.now());
+        }
+
         // 将问题和答案进行匹配
         List<Map.Entry<CbtExerciseDetail, CBTDTO>> qaPairs = new ArrayList<>();
         for (int i = 0; i < questions.size(); i++) {

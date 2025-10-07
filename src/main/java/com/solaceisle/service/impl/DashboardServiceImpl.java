@@ -54,34 +54,64 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public TrackVO getRecentTrack(int days) {
-        // Mapper已按日期升序排序
         List<Diary> diaries = diaryMapper.getRecentTrack(currentUserIdOrThrow(), days);
         TrackVO trackVO = new TrackVO();
-        if(diaries==null||diaries.isEmpty()){
+
+        List<Track> tracks = new ArrayList<>(days);
+        LocalDate cursor = LocalDate.now();
+
+        if (diaries == null || diaries.isEmpty()) {
             trackVO.setConsecutiveDays(0);
+            // 无日记，直接从今天开始补满 days 天
+            for (int i = 0; i < days; i++) {
+                Track t = new Track();
+                t.setDay(cursor.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.CHINA));
+                tracks.add(t);
+                cursor = cursor.minusDays(1);
+            }
+            trackVO.setMoodTrend(tracks.reversed());
+            return trackVO;
         }
-        else
-            trackVO.setConsecutiveDays(diaries.get(0).getConsecutiveDays());
-        List<Track> tracks = new ArrayList<>();
-        LocalDate lastDiary = LocalDate.now();
+
+        // 连续天数取最新一条
+        trackVO.setConsecutiveDays(diaries.get(0).getConsecutiveDays());
+
+//        // 确保按时间从近到远
+//        diaries.sort(Comparator.comparing(Diary::getCreateTime).reversed());
+
         for (Diary diary : diaries) {
             if (tracks.size() >= days) break;
-            Track track = new Track();
-            int daysBetween = (int) (lastDiary.toEpochDay() - diary.getCreateTime().toEpochDay());
-            for (int i = 0; i < daysBetween - 1; i++) {
-                tracks.add(new Track());
+
+            LocalDate d = diary.getCreateTime();
+            int gap = (int) (cursor.toEpochDay() - d.toEpochDay()); // 需要补的空白天数（包含今天若缺）
+            for (int i = 0; i < gap && tracks.size() < days; i++) {
+                LocalDate missingDate = cursor.minusDays(i);
+                Track t = new Track();
+                t.setDay(missingDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.CHINA));
+                tracks.add(t);
             }
-            track.setDay(diary.getCreateTime().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.CHINA));
-            track.setLabel(diary.getEmoji());
-            track.setScore(diary.getScore());
-            tracks.add(track);
-        }
-        if (tracks.size() < days) {
-            int remainingDays = days - tracks.size();
-            for (int i = 0; i < remainingDays; i++) {
-                tracks.add(new Track());
+
+            if (tracks.size() < days) {
+                // 添加当前日记对应的轨迹
+                Track t = new Track();
+                t.setDay(d.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.CHINA));
+                t.setLabel(diary.getEmoji());
+                t.setScore(diary.getScore());
+                tracks.add(t);
             }
+
+            // 游标移到该日记的前一天，继续向过去补
+            cursor = d.minusDays(1);
         }
+
+        // 若仍不足 days，继续从游标向过去补空白
+        while (tracks.size() < days) {
+            Track t = new Track();
+            t.setDay(cursor.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.CHINA));
+            tracks.add(t);
+            cursor = cursor.minusDays(1);
+        }
+
         trackVO.setMoodTrend(tracks.reversed());
         return trackVO;
     }

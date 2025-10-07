@@ -11,6 +11,7 @@ import com.solaceisle.pojo.vo.chat.*;
 import com.solaceisle.service.ChatService;
 import io.github.imfangs.dify.client.DifyChatClient;
 import io.github.imfangs.dify.client.DifyChatflowClient;
+import io.github.imfangs.dify.client.DifyWorkflowClient;
 import io.github.imfangs.dify.client.callback.ChatStreamCallback;
 import io.github.imfangs.dify.client.callback.ChatflowStreamCallback;
 import io.github.imfangs.dify.client.enums.ResponseMode;
@@ -18,6 +19,8 @@ import io.github.imfangs.dify.client.event.*;
 import io.github.imfangs.dify.client.exception.DifyApiException;
 import io.github.imfangs.dify.client.model.chat.ChatMessage;
 import io.github.imfangs.dify.client.model.chat.Conversation;
+import io.github.imfangs.dify.client.model.workflow.WorkflowRunRequest;
+import io.github.imfangs.dify.client.model.workflow.WorkflowRunResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +44,7 @@ public class ChatServiceImpl implements ChatService {
 
     private final DifyChatflowClient chatPartnerClient;
     private final UserMapper userMapper;
-    private final DifyChatClient suggestionGeneratorClient;
+    private final DifyWorkflowClient suggestionGeneratorClient;
 
     @Value("${solace.hotline}")
     private String hotline;
@@ -166,44 +169,17 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<String> getIntroSuggestions() throws DifyApiException, IOException, ExecutionException, InterruptedException {
-        var message = ChatMessage.builder()
-                .user(BaseContext.getCurrentId())
-                .responseMode(ResponseMode.STREAMING)
-                .query(MessageConstant.INTRO_SUGGESTION_QUERY)
-                .inputs(Map.of())
+        var studentId = BaseContext.getCurrentId();
+        var request= WorkflowRunRequest.builder()
+                .user(studentId)
+                .inputs(Map.of("id",studentId))
+                .responseMode(ResponseMode.BLOCKING)
                 .build();
 
-        var future = new CompletableFuture<String>();
+        WorkflowRunResponse response = suggestionGeneratorClient.runWorkflow(request);
+        Object text = response.getData().getOutputs().getOrDefault("text", "[]");
 
-        var callback = new SuggestionChatStreamCallback(future);
-
-        suggestionGeneratorClient.sendChatMessageStream(message, callback);
-
-        return JSON.parseArray(future.get(), String.class);
-    }
-
-    static class SuggestionChatStreamCallback implements ChatStreamCallback {
-        private final CompletableFuture<String> suggestionFuture;
-        private final StringBuilder sb = new StringBuilder();
-
-        public SuggestionChatStreamCallback(CompletableFuture<String> suggestionFuture) {
-            this.suggestionFuture = suggestionFuture;
-        }
-
-        @Override
-        public void onAgentMessage(AgentMessageEvent event) {
-            sb.append(event.getAnswer());
-        }
-
-        @Override
-        public void onMessageEnd(MessageEndEvent event) {
-            suggestionFuture.complete(sb.toString());
-        }
-
-        @Override
-        public void onError(ErrorEvent event) {
-            throw new SuggestionGeneratorException(event.toString());
-        }
+        return JSON.parseArray((String)text, String.class);
     }
 }
 

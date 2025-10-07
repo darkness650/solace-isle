@@ -149,7 +149,8 @@ public class AutoFillAspact {
         String achievementId=(String) args[1];
         Achievement achievement = achievementMapper.getAchievement(achievementId);
         AchievementVO achievementVO=new AchievementVO(achievement.getTitle(),achievement.getDescription(),achievement.getIcon(), LocalDateTime.now());
-        String achieveRemind= JSON.toJSONString(achievementVO);
+        WebsocketVO websocketVO= WebsocketVO.achievement(achievementVO);
+        String achieveRemind=JSON.toJSONString(websocketVO);
         webSocketServer.sendToClient(BaseContext.getCurrentId(),achieveRemind);
     }
 }

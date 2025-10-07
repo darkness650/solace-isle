@@ -1,24 +1,20 @@
 package com.solaceisle.service.impl;
 
 import com.alibaba.fastjson2.JSON;
-import com.solaceisle.constant.MessageConstant;
-import com.solaceisle.context.BaseContext;
-import com.solaceisle.exception.IllegalDateFormatException;
 import com.solaceisle.mapper.DiaryMapper;
 import com.solaceisle.pojo.entity.Diary;
 import com.solaceisle.pojo.vo.DiaryVO;
 import com.solaceisle.service.AIService;
-import com.solaceisle.service.DiaryService;
 import com.solaceisle.util.EmailUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AIServiceImpl implements AIService {
@@ -35,14 +31,12 @@ public class AIServiceImpl implements AIService {
     }
 
     @Override
-    public List<DiaryVO> getMonthDiary(String id, String yearMonth) {
-        if (yearMonth == null || !yearMonth.matches(YEAR_MONTH_REGEX)) {
-            throw new IllegalDateFormatException(MessageConstant.DATE_FORMAT_ERROR);
-        }
-        LocalDate start = LocalDate.parse(yearMonth + "-01");
-        LocalDate end = start.plusMonths(1);
+    public List<DiaryVO> getWeekDiary(String id) {
+        log.info("AI 调用获取本周日记接口，学号：{}", id);
+        LocalDate end = LocalDate.now().plusDays(1);
+        LocalDate start = end.minusDays(7);
 
-        List<Diary> diaries = diaryMapper.findByStudentIdAndYearMonth(id, start, end);
+        List<Diary> diaries = diaryMapper.findByStudentIdAndDateRange(id, start, end);
 
         List<DiaryVO> diaryVOs = new ArrayList<>(diaries.size());
         for (Diary diary : diaries) {

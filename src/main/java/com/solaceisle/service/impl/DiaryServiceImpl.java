@@ -20,9 +20,7 @@ import io.github.imfangs.dify.client.model.completion.CompletionRequest;
 import io.github.imfangs.dify.client.model.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -51,7 +49,7 @@ public class DiaryServiceImpl implements DiaryService {
         LocalDate end = start.plusMonths(1);
         String studentId = BaseContext.getCurrentId();
 
-        List<Diary> diaries = diaryMapper.findByStudentIdAndYearMonth(studentId, start, end);
+        List<Diary> diaries = diaryMapper.findByStudentIdAndDateRange(studentId, start, end);
 
         List<DiaryVO> diaryVOs = new ArrayList<>(diaries.size());
         for (Diary diary : diaries) {
