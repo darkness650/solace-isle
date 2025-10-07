@@ -1,0 +1,48 @@
+solace:
+  jwt:
+    # 设置jwt签名加密时使用的秘钥
+    user-secret-key:
+    # 设置jwt过期时间（毫秒）
+    user-ttl: 10_800_000
+  alioss:
+    # 阿里云OSS bucket名称
+    bucket-name:
+    # 接入点
+    endpoint:
+    access-key-id:
+    access-key-secret:
+  # PostgreSQL数据库连接配置
+  datasource:
+    host:
+    port:
+    database:
+    username:
+    password:
+  # 电子邮件服务器配置
+  mail:
+    host:
+    port:
+    username:
+    password:
+    from:
+  # 心理健康中心热线电话
+  hotline:
+  # Dify AI服务配置
+  dify:
+    url:
+    api-key:
+      # 标签生成器
+      tag-generator:
+      # AI聊天伙伴
+      chat-partner:
+      # 日记情绪分析
+      diary-emotion-rank:
+      # 提问建议生成器
+      suggestion-generator:
+      # CBT训练分析器
+      cbt-analyzer:
+  redis:
+    # 验证码过期时间（秒）
+    expiration-time:
+    host:
+    port:
